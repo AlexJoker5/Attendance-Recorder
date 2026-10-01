@@ -1,0 +1,41 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.tsbuildinfo
+.vercel/
+
+# Project folders
+/supabase/
+/deployment/
+/design/
+
+# macOS generated files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100/
+.fseventsd/
+.Spotlight-V100/
+.TemporaryItems/
+.Trashes/
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows generated files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.stackdump
+
+# Linux generated files and temporary filesystem files
+.directory
+.Trash-*/
+.fuse_hidden*
+.nfs*
+*~

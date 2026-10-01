@@ -1,0 +1,2 @@
+# Use LF for text files; automatically detect binary files.
+* text=auto eol=lf

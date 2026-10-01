@@ -1,0 +1,4 @@
+export const SELECT_MENU_MAX_HEIGHT = 280;
+export const SELECT_MENU_GAP = 6;
+export const SELECT_VIEWPORT_MARGIN = 12;
+export const SELECT_TYPEAHEAD_TIMEOUT = 700;
