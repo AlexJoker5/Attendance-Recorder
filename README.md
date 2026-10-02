@@ -37,6 +37,6 @@ See [Frontend architecture](docs/09-frontend-architecture.md) for the approved r
 
 ## Cloudflare connectivity proxy
 
-Follow [Cloudflare Worker setup](docs/11-cloudflare-worker-setup.md) to deploy the included Worker through Cloudflare's dashboard, verify reachability from Myanmar, and configure Vercel. The optional `VITE_SUPABASE_PROXY_URL` routes Auth, RPCs, and private report uploads/downloads through the Worker. Keep the original `VITE_SUPABASE_URL` and publishable key. The existing project-specific login storage key is preserved.
+Follow [Cloudflare Worker setup](docs/11-cloudflare-worker-setup.md) to deploy the included Worker through Cloudflare's dashboard, verify reachability from Myanmar, and configure Vercel. The optional `SUPABASE_PROXY_URL` routes Auth, RPCs, and private report uploads/downloads through the Worker. Keep the original `SUPABASE_URL` and publishable key. The existing project-specific login storage key is preserved.
 
 The maintained TypeScript source is in `cloudflare/supabase-proxy/src`; the ready-to-paste dashboard module is `cloudflare/supabase-proxy/worker.js`. Run `npm run build:worker` after source changes. This uses the project's existing TypeScript, Vite, and Prettier packages. Deployment is performed separately by the owner. No Cloudflare runtime package is added to the React app.

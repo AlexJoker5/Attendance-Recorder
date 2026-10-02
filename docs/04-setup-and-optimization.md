@@ -65,7 +65,7 @@ The Vite project, package.json, lockfile, root vercel.json and production build 
 3. Set project root to the directory containing the future `package.json`.
 4. Build command: `npm run build`. Output directory: `dist`. Install using the package manager matching the committed lockfile. Use a supported Node LTS version consistently in local development and Vercel.
 5. Copy `deployment/vercel.json` to the app root. The rewrite serves the SPA entry point for routes such as `/students/...` when refreshed directly. Revisit the catch-all if server API routes are introduced later. [Vite on Vercel](https://vercel.com/docs/frameworks/frontend/vite)
-6. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` in Vercel environment settings. Use a separate staging Supabase project for previews, or leave preview data access unconfigured. Do not let unreviewed preview code write to your production student data.
+6. Add `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` in Vercel environment settings. Use a separate staging Supabase project for previews, or leave preview data access unconfigured. Do not let unreviewed preview code write to your production student data.
 7. Set the Supabase Auth URL configuration to match the deployed domain. Redeploy after build-time environment variables change. Vite includes `VITE_` variables in the client bundle, so only browser-safe values belong there. [Vercel environment variables](https://vercel.com/docs/environment-variables), [Vite environment variables](https://vite.dev/guide/env-and-mode)
 8. Check login, logout, direct-link refresh, file download, and both desktop and mobile layouts on the deployed domain before real data use.
 

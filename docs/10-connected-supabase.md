@@ -22,9 +22,9 @@ npm run dev
 Keep your existing .env.local settings:
 
 ```env
-VITE_DATA_MODE=supabase
-VITE_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_YOUR_ACTUAL_KEY
+DATA_MODE=supabase
+SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+SUPABASE_PUBLISHABLE_KEY=sb_publishable_YOUR_ACTUAL_KEY
 ```
 
 No additional account, package, secret key, or paid service is required for this integration. A publishable key is intended for frontend use; data access is controlled by Auth and database policies. Never place a secret/service-role key or database password in frontend configuration. [Supabase API keys](https://supabase.com/docs/guides/getting-started/api-keys)
@@ -80,7 +80,7 @@ Storage upload and database commit are separate operations. If the database save
 
 The repository currently reads one consistent owner workspace and caches it; table search/sort/pagination remain in the browser. Files are downloaded only on request. This fits the initial single-administrator workflow. Large attendance histories should move to feature-scoped, paginated RPC reads before significantly expanding usage.
 
-Local preview remains available only through Vite development mode with VITE_DATA_MODE=local. Its data and originals stay separate from Supabase and are not migrated automatically. Sign-out clears the in-memory workspace cache.
+Local preview remains available only through Vite development mode with DATA_MODE=local. Its data and originals stay separate from Supabase and are not migrated automatically. Sign-out clears the in-memory workspace cache.
 
 ## Verification and remaining work
 
