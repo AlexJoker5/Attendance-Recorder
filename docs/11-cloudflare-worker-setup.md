@@ -6,7 +6,7 @@ Your supplied website address is **https://www.lap-attendance.vercel.app**. Both
 
 ## 1. Prepare these values
 
-Have your Cloudflare account, your existing Supabase project URL, and access to the Vercel project settings ready. The Supabase URL looks like `https://abcdefghijklmnopqrst.supabase.co`. It is the same original URL you already use in `SUPABASE_URL`.
+Have your Cloudflare account, your existing Supabase project URL, and access to the Vercel project settings ready. The Supabase URL looks like `https://abcdefghijklmnopqrst.supabase.co`. It is the same original URL you already use in `VITE_SUPABASE_URL`.
 
 Keep the publishable key in your existing frontend environment settings. Do not enter your database password, Supabase secret/service-role key, or owner login password into the Worker. No stored API key is needed there.
 
@@ -76,12 +76,14 @@ Open **Vercel → your Attendance Admin project → Settings → Environment Var
 
 | Variable                        | Value                                                                       |
 | ------------------------------- | --------------------------------------------------------------------------- |
-| `DATA_MODE`                | `supabase`                                                                  |
-| `SUPABASE_URL`             | Keep your original `https://PROJECT_REF.supabase.co` URL                    |
-| `SUPABASE_PUBLISHABLE_KEY` | Keep your existing publishable key                                          |
-| `SUPABASE_PROXY_URL`       | The Worker origin, e.g. `https://attendance-api.YOUR_SUBDOMAIN.workers.dev` |
+| `VITE_DATA_MODE`                | `supabase`                                                                  |
+| `VITE_SUPABASE_URL`             | Keep your original `https://PROJECT_REF.supabase.co` URL                    |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Keep your existing publishable key                                          |
+| `VITE_SUPABASE_PROXY_URL`       | The Worker origin, e.g. `https://attendance-api.YOUR_SUBDOMAIN.workers.dev` |
 
 The proxy value must not end in `/health`. Save the settings, then create a **new production deployment** of the updated code. Vite embeds these values during the build. Existing deployments do not pick up changes automatically. [Vercel environment variables](https://vercel.com/docs/environment-variables), [Vite environment variables](https://vite.dev/guide/env-and-mode)
+
+Keep the `VITE_` prefix for these frontend variables. Vercel supports it; Vite needs it to expose this public configuration to browser code. A browser-exposure warning is expected for the Supabase publishable key. Never use a secret/service-role key. Cloudflare Worker variables stay unprefixed (`SUPABASE_URL` and `ALLOWED_ORIGINS`).
 
 Do not add arbitrary preview deployment domains to the allowlist. If you need a preview, explicitly configure its origin and the intended Supabase project.
 
@@ -101,13 +103,13 @@ The app preserves the existing Supabase login-storage key when switching hosts, 
 
 ## 8. Optional local development
 
-Add the actual Worker origin to your existing `.env.local`:
+Add the actual Worker origin to your existing `.env`:
 
 ```env
-DATA_MODE=supabase
-SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
-SUPABASE_PUBLISHABLE_KEY=YOUR_EXISTING_PUBLISHABLE_KEY
-SUPABASE_PROXY_URL=https://attendance-api.YOUR_SUBDOMAIN.workers.dev
+VITE_DATA_MODE=supabase
+VITE_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_EXISTING_PUBLISHABLE_KEY
+VITE_SUPABASE_PROXY_URL=https://attendance-api.YOUR_SUBDOMAIN.workers.dev
 ```
 
 Restart the Vite server after changing environment settings. Start it yourself when ready:
@@ -117,7 +119,7 @@ Set-Location 'C:\Users\MPSS\Desktop\LAP\attendance-app'
 npm run dev
 ```
 
-Open http://127.0.0.1:5179. The Worker allows that exact origin. `.env.local` is ignored by Git; do not commit it. The coding agent does not leave the development server running.
+Open http://127.0.0.1:5179. The Worker allows that exact origin. `.env` is ignored by Git; do not commit it. The coding agent does not leave the development server running.
 
 ## 9. Troubleshooting
 
@@ -137,7 +139,7 @@ Open http://127.0.0.1:5179. The Worker allows that exact origin. `.env.local` is
 
 The current app does not use Realtime, OAuth, magic links or password-reset email links. Those need separate routing/redirect work if added later. The proxy does not make Supabase's administration dashboard or email links automatically reachable.
 
-To return to direct API access, clear `SUPABASE_PROXY_URL` and rebuild/redeploy the frontend. This is a rollback option only when your connection can reach the original API. You do not need to undo database migrations or migrate data.
+To return to direct API access, clear `VITE_SUPABASE_PROXY_URL` and rebuild/redeploy the frontend. This is a rollback option only when your connection can reach the original API. You do not need to undo database migrations or migrate data.
 
 ## 10. Optional CLI deployment if no dashboard editor is available
 
