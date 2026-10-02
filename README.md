@@ -1,6 +1,6 @@
 # Attendance Admin
 
-Private student attendance management built with React, strict TypeScript, Vite, Tailwind CSS and custom reusable components. React Hook Form, Zod 4, TanStack Query/Table, Lucide, Recharts, i18next and SheetJS are included. Supabase provides connected authentication, relational persistence, and private report storage. Vercel is the planned host.
+Private student attendance management built with React, strict TypeScript, Vite, Tailwind CSS and custom reusable components. React Hook Form, Zod 4, TanStack Query/Table, Lucide, Recharts, i18next and SheetJS are included. Supabase provides connected authentication, relational persistence, and private report storage. The owner-provided hosted address is https://www.lap-attendance.vercel.app.
 
 ## Run the React app
 
@@ -34,3 +34,9 @@ Hosted workflow verification, representative Zoom parsing, final wording review,
 ## Frontend organization
 
 See [Frontend architecture](docs/09-frontend-architecture.md) for the approved reusable-component structure, feature schemas/constants/types, workflow hooks, and shared Excel/CSV utilities.
+
+## Cloudflare connectivity proxy
+
+Follow [Cloudflare Worker setup](docs/11-cloudflare-worker-setup.md) to deploy the included Worker through Cloudflare's dashboard, verify reachability from Myanmar, and configure Vercel. The optional `VITE_SUPABASE_PROXY_URL` routes Auth, RPCs, and private report uploads/downloads through the Worker. Keep the original `VITE_SUPABASE_URL` and publishable key. The existing project-specific login storage key is preserved.
+
+The maintained TypeScript source is in `cloudflare/supabase-proxy/src`; the ready-to-paste dashboard module is `cloudflare/supabase-proxy/worker.js`. Run `npm run build:worker` after source changes. This uses the project's existing TypeScript, Vite, and Prettier packages. Deployment is performed separately by the owner. No Cloudflare runtime package is added to the React app.

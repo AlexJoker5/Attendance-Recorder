@@ -9,6 +9,14 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    files: ['cloudflare/supabase-proxy/src/**/*.ts'],
+    languageOptions: { globals: globals.worker },
+  },
+  {
+    files: ['cloudflare/supabase-proxy/scripts/**/*.mjs'],
+    languageOptions: { globals: globals.node },
+  },
+  {
     files: ['src/**/*.{ts,tsx}'],
     languageOptions: { globals: globals.browser },
     plugins: { 'react-hooks': hooks },

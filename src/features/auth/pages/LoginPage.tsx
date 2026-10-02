@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Panel } from '@/components/ui/Panel';
 import { RecordForm } from '@/components/ui/RecordForm';
-import { localMode, supabase } from '@/lib/supabase';
+import { localMode, supabase, supabaseConfigurationError } from '@/lib/supabase';
 import { Check, Languages } from 'lucide-react';
 import { useLogin } from '../hooks/useLogin';
 import { loginSchema } from '../schemas/loginSchema';
@@ -59,7 +59,8 @@ export default function LoginPage(props: Parameters<typeof useLogin>[0]) {
             ) : !supabase ? (
               <p className="callout warning">
                 {t(
-                  'Setup required. Configure Supabase before signing in. Local preview is disabled in production.',
+                  supabaseConfigurationError ||
+                    'Setup required. Configure Supabase before signing in. Local preview is disabled in production.',
                 )}
               </p>
             ) : (

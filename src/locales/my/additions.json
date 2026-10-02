@@ -183,5 +183,8 @@
   "When this record was created (Asia/Yangon).": "ဤမှတ်တမ်းကို ဖန်တီးခဲ့သည့်အချိန် (Asia/Yangon)။",
   "When this attendance record was created (Asia/Yangon).": "ဤတက်ရောက်မှုမှတ်တမ်းကို ဖန်တီးခဲ့သည့်အချိန် (Asia/Yangon)။",
   "When this semester enrollment was created (Asia/Yangon).": "ဤစာသင်ကာလအတွက် ကျောင်းသားစာရင်းသွင်းခဲ့သည့်အချိန် (Asia/Yangon)။",
-  "When this import was applied (Asia/Yangon).": "ဤဖိုင်ကို တင်သွင်းအသုံးပြုခဲ့သည့်အချိန် (Asia/Yangon)။"
+  "When this import was applied (Asia/Yangon).": "ဤဖိုင်ကို တင်သွင်းအသုံးပြုခဲ့သည့်အချိန် (Asia/Yangon)။",
+  "Set the Supabase project URL and publishable key before signing in.": "ဝင်ရောက်ခြင်းမပြုမီ Supabase project URL နှင့် publishable key ကို သတ်မှတ်ပါ။",
+  "The Supabase project URL must be a valid HTTPS origin without a path.": "Supabase project URL သည် path မပါဝင်သော မှန်ကန်သည့် HTTPS လိပ်စာဖြစ်ရမည်။",
+  "The Supabase proxy URL must be a valid HTTPS origin without a path.": "Supabase proxy URL သည် path မပါဝင်သော မှန်ကန်သည့် HTTPS လိပ်စာဖြစ်ရမည်။"
 }

@@ -5,6 +5,9 @@ dist/
 !.env.example
 *.tsbuildinfo
 .vercel/
+.wrangler/
+.dev.vars
+.dev.vars.*
 
 # Project folders
 /supabase/

@@ -394,5 +394,8 @@
   "When this record was created (Asia/Yangon).": "When this record was created (Asia/Yangon).",
   "When this attendance record was created (Asia/Yangon).": "When this attendance record was created (Asia/Yangon).",
   "When this semester enrollment was created (Asia/Yangon).": "When this semester enrollment was created (Asia/Yangon).",
-  "When this import was applied (Asia/Yangon).": "When this import was applied (Asia/Yangon)."
+  "When this import was applied (Asia/Yangon).": "When this import was applied (Asia/Yangon).",
+  "Set the Supabase project URL and publishable key before signing in.": "Set the Supabase project URL and publishable key before signing in.",
+  "The Supabase project URL must be a valid HTTPS origin without a path.": "The Supabase project URL must be a valid HTTPS origin without a path.",
+  "The Supabase proxy URL must be a valid HTTPS origin without a path.": "The Supabase proxy URL must be a valid HTTPS origin without a path."
 }

@@ -1,7 +1,16 @@
 import type { Database } from '@/app/types/databaseTypes';
 import { createClient } from '@supabase/supabase-js';
+import { supabaseConfig } from './supabaseConfig';
 
-const url = import.meta.env.VITE_SUPABASE_URL;
-const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const config = supabaseConfig(
+  (import.meta.env.VITE_SUPABASE_URL ?? '').trim(),
+  (import.meta.env.VITE_SUPABASE_PROXY_URL ?? '').trim(),
+  (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? '').trim(),
+  import.meta.env.DEV,
+);
 export const localMode = import.meta.env.DEV && import.meta.env.VITE_DATA_MODE !== 'supabase';
-export const supabase = url && key ? createClient<Database>(url, key) : null;
+export const supabaseConfigurationError = config.error;
+export const supabase =
+  config.url && config.key
+    ? createClient<Database>(config.url, config.key, { auth: { storageKey: config.storageKey } })
+    : null;
