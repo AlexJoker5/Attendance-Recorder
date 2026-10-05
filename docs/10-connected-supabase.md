@@ -25,9 +25,10 @@ Keep your existing .env settings:
 VITE_DATA_MODE=supabase
 VITE_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_YOUR_ACTUAL_KEY
+VITE_SUPABASE_PROXY_URL=https://YOUR_WORKER.workers.dev
 ```
 
-No additional account, package, secret key, or paid service is required for this integration. A publishable key is intended for frontend use; data access is controlled by Auth and database policies. Never place a secret/service-role key or database password in frontend configuration. [Supabase API keys](https://supabase.com/docs/guides/getting-started/api-keys)
+Connected mode now requires the existing Cloudflare Worker as the Myanmar/unknown route and automatic fallback. Follow [Worker setup](11-cloudflare-worker-setup.md) and [Automatic connection routing](12-automatic-connection-routing.md). No additional package, secret key, or geolocation service is required. A publishable key is intended for frontend use; data access is controlled by Auth and database policies. Never place a secret/service-role key or database password in frontend configuration. [Supabase API keys](https://supabase.com/docs/guides/getting-started/api-keys)
 
 ## Created Date columns
 

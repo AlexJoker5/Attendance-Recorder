@@ -26,11 +26,13 @@ export function supabaseConfig(original: string, proxy: string, key: string, dev
   const upstream = apiOrigin(original, development);
   if (!upstream)
     return { error: 'The Supabase project URL must be a valid HTTPS origin without a path.' };
-  const endpoint = proxy ? apiOrigin(proxy, development) : upstream;
+  if (!proxy) return { error: 'Set the Cloudflare Worker URL before signing in.' };
+  const endpoint = apiOrigin(proxy, development);
   if (!endpoint)
     return { error: 'The Supabase proxy URL must be a valid HTTPS origin without a path.' };
   return {
-    url: endpoint.origin,
+    url: upstream.origin,
+    proxy: endpoint.origin,
     key,
     // Match the SDK's existing default, even when the transport hostname changes.
     storageKey: `sb-${upstream.hostname.split('.')[0]}-auth-token`,

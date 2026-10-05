@@ -186,5 +186,13 @@
   "When this import was applied (Asia/Yangon).": "ဤဖိုင်ကို တင်သွင်းအသုံးပြုခဲ့သည့်အချိန် (Asia/Yangon)။",
   "Set the Supabase project URL and publishable key before signing in.": "ဝင်ရောက်ခြင်းမပြုမီ Supabase project URL နှင့် publishable key ကို သတ်မှတ်ပါ။",
   "The Supabase project URL must be a valid HTTPS origin without a path.": "Supabase project URL သည် path မပါဝင်သော မှန်ကန်သည့် HTTPS လိပ်စာဖြစ်ရမည်။",
-  "The Supabase proxy URL must be a valid HTTPS origin without a path.": "Supabase proxy URL သည် path မပါဝင်သော မှန်ကန်သည့် HTTPS လိပ်စာဖြစ်ရမည်။"
+  "The Supabase proxy URL must be a valid HTTPS origin without a path.": "Supabase proxy URL သည် path မပါဝင်သော မှန်ကန်သည့် HTTPS လိပ်စာဖြစ်ရမည်။",
+  "Set the Cloudflare Worker URL before signing in.": "ဝင်ရောက်ခြင်းမပြုမီ Cloudflare Worker URL ကို သတ်မှတ်ပါ။",
+  "Preparing your connection…": "ချိတ်ဆက်မှုကို ပြင်ဆင်နေသည်…",
+  "Reconnecting…": "ပြန်လည်ချိတ်ဆက်နေသည်…",
+  "Attendance connection": "တက်ရောက်မှုစနစ် ချိတ်ဆက်မှု",
+  "Retry connection": "ပြန်လည်ချိတ်ဆက်ရန်",
+  "Could not connect to the attendance service. Check your internet connection and retry.": "တက်ရောက်မှုစနစ်သို့ ချိတ်ဆက်၍ မရပါ။ အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ပြန်လည်ကြိုးစားပါ။",
+  "The attendance service is unavailable. Please try again.": "တက်ရောက်မှုစနစ်ကို လက်ရှိ အသုံးပြု၍ မရပါ။ ပြန်လည်ကြိုးစားပါ။",
+  "The connection changed while this request was in progress. Review the latest records before trying again; the request may already have completed.": "လုပ်ဆောင်နေစဉ် ချိတ်ဆက်မှု ပြောင်းလဲသွားပါသည်။ လုပ်ဆောင်ချက် ပြီးစီးပြီးဖြစ်နိုင်သဖြင့် ထပ်မံကြိုးစားခြင်းမပြုမီ နောက်ဆုံးမှတ်တမ်းများကို စစ်ဆေးပါ။"
 }

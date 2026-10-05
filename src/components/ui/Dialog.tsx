@@ -36,6 +36,7 @@ export function Dialog({
     <dialog
       ref={ref}
       className="dialog"
+      aria-label={title}
       onCancel={(event) => {
         event.preventDefault();
         if (!busy) onClose();

@@ -83,7 +83,7 @@ Open **Vercel → your Attendance Admin project → Settings → Environment Var
 
 The proxy value must not end in `/health`. Save the settings, then create a **new production deployment** of the updated code. Vite embeds these values during the build. Existing deployments do not pick up changes automatically. [Vercel environment variables](https://vercel.com/docs/environment-variables), [Vite environment variables](https://vite.dev/guide/env-and-mode)
 
-Keep the `VITE_` prefix for these frontend variables. Vercel supports it; Vite needs it to expose this public configuration to browser code. A browser-exposure warning is expected for the Supabase publishable key. Never use a secret/service-role key. Cloudflare Worker variables stay unprefixed (`SUPABASE_URL` and `ALLOWED_ORIGINS`).
+Choose **Config**, not Secret, for all four frontend variables. Keep the `VITE_` prefix. Vercel supports it; Vite needs it to expose this public configuration to browser code. A browser-exposure warning is expected for the Supabase publishable key. Never use a secret/service-role key. Cloudflare Worker variables stay unprefixed (`SUPABASE_URL` and `ALLOWED_ORIGINS`).
 
 Do not add arbitrary preview deployment domains to the allowlist. If you need a preview, explicitly configure its origin and the intended Supabase project.
 
@@ -97,7 +97,7 @@ Use your hosted app and manually perform these actions:
 4. Upload a report you are ready to import and follow the usual session review process. Download the stored original from import history.
 5. Confirm you can sign out and sign in again. Let the app remain open long enough to confirm session refresh works during ordinary use.
 
-In browser Developer Tools → **Network**, Supabase API requests should go to your **workers.dev** hostname. Auth uses `/auth/v1/...`, database requests use `/rest/v1/rpc/...`, and original files use `/storage/v1/...`. Successful Worker responses include `X-Attendance-Proxy: cloudflare`. No data request should silently fall back to the blocked direct API while the proxy is configured.
+In browser Developer Tools → **Network**, Supabase API requests from Myanmar/unknown locations should go to your **workers.dev** hostname. Other recognized IP countries initially connect directly to Supabase. See [Automatic connection routing](12-automatic-connection-routing.md) for the saved fallback behavior. Auth uses `/auth/v1/...`, database requests use `/rest/v1/rpc/...`, and original files use `/storage/v1/...`. Successful Worker responses include `X-Attendance-Proxy: cloudflare`. Once a direct network failure is saved, no later request or page load should try the direct API again in that browser.
 
 The app preserves the existing Supabase login-storage key when switching hosts, though an expired session may still require login. Your original project URL can still appear in the built configuration; what matters for reachability is the destination of actual API requests.
 
@@ -139,7 +139,7 @@ Open http://127.0.0.1:5179. The Worker allows that exact origin. `.env` is ignor
 
 The current app does not use Realtime, OAuth, magic links or password-reset email links. Those need separate routing/redirect work if added later. The proxy does not make Supabase's administration dashboard or email links automatically reachable.
 
-To return to direct API access, clear `VITE_SUPABASE_PROXY_URL` and rebuild/redeploy the frontend. This is a rollback option only when your connection can reach the original API. You do not need to undo database migrations or migrate data.
+Automatic routing requires both frontend URLs. Do not clear `VITE_SUPABASE_PROXY_URL` to force direct access. A saved direct-failure preference can be reset by clearing its project-specific localStorage entry, which explicitly permits the app to select a fresh route on the next visit. No database migration or data transfer is involved. See [Automatic connection routing](12-automatic-connection-routing.md).
 
 ## 10. Optional CLI deployment if no dashboard editor is available
 

@@ -1,7 +1,7 @@
 import { useWorkspace } from '@/app/hooks/useWorkspace';
 import { STORAGE_KEYS } from '@/app/const/storageKeys';
 import { queryClient } from '@/lib/queryClient';
-import { localMode, supabase } from '@/lib/supabase';
+import { connectionRouter, localMode, supabase } from '@/lib/supabase';
 import { useEffect, useState } from 'react';
 
 export function useOwnerSession() {
@@ -40,9 +40,16 @@ export function useOwnerSession() {
         if (!disposed) void check();
       }, 0);
     });
+    const unsubscribeConnection = connectionRouter?.subscribe(() => {
+      if (connectionRouter?.getSnapshot().phase !== 'ready') return;
+      window.setTimeout(() => {
+        if (!disposed) void check();
+      }, 0);
+    });
     return () => {
       disposed = true;
       listener.subscription.unsubscribe();
+      unsubscribeConnection?.();
     };
   }, []);
   async function signOut() {

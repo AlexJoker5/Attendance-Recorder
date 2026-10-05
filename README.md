@@ -18,7 +18,8 @@ Available commands: `dev`, `build`, `preview`, `typecheck`, `lint`, `format`, `f
 
 - `src/app`: providers, routing, workspace repositories, response composition, and the shared data cache.
 - `src/components`: custom UI components and the admin layout.
-- `src/features`: semesters, groups, classes, students, attendance, imports, reports and authentication.
+- `src/features`: semesters, groups, classes, students, attendance, imports, reports, authentication and connection routing.
+- `api`: the Vercel function that selects a connection from the visitor's IP country.
 - `src/locales`: English and Myanmar resources.
 - `src/styles`: shared design tokens and Tailwind/CSS.
 - `design`: preserved interactive HTML design reference.
@@ -37,6 +38,6 @@ See [Frontend architecture](docs/09-frontend-architecture.md) for the approved r
 
 ## Cloudflare connectivity proxy
 
-Follow [Cloudflare Worker setup](docs/11-cloudflare-worker-setup.md) to deploy the included Worker through Cloudflare's dashboard, verify reachability from Myanmar, and configure Vercel. The optional `SUPABASE_PROXY_URL` routes Auth, RPCs, and private report uploads/downloads through the Worker. Keep the original `SUPABASE_URL` and publishable key. The existing project-specific login storage key is preserved.
+Follow [Cloudflare Worker setup](docs/11-cloudflare-worker-setup.md) to deploy the included Worker through Cloudflare's dashboard, verify reachability from Myanmar, and configure Vercel. Connected mode requires `VITE_SUPABASE_PROXY_URL` alongside the original `VITE_SUPABASE_URL` and publishable key. Myanmar and unknown IP countries use the Worker; other recognized countries try direct Supabase. If the direct connection fails, the app automatically switches to Cloudflare and remembers that preference across browser visits. Auth, RPCs, and private report uploads/downloads share the selected route and the existing project-specific login storage key. See [Automatic connection routing](docs/12-automatic-connection-routing.md) for deployment and manual verification.
 
 The maintained TypeScript source is in `cloudflare/supabase-proxy/src`; the ready-to-paste dashboard module is `cloudflare/supabase-proxy/worker.js`. Run `npm run build:worker` after source changes. This uses the project's existing TypeScript, Vite, and Prettier packages. Deployment is performed separately by the owner. No Cloudflare runtime package is added to the React app.

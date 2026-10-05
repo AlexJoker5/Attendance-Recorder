@@ -397,5 +397,13 @@
   "When this import was applied (Asia/Yangon).": "When this import was applied (Asia/Yangon).",
   "Set the Supabase project URL and publishable key before signing in.": "Set the Supabase project URL and publishable key before signing in.",
   "The Supabase project URL must be a valid HTTPS origin without a path.": "The Supabase project URL must be a valid HTTPS origin without a path.",
-  "The Supabase proxy URL must be a valid HTTPS origin without a path.": "The Supabase proxy URL must be a valid HTTPS origin without a path."
+  "The Supabase proxy URL must be a valid HTTPS origin without a path.": "The Supabase proxy URL must be a valid HTTPS origin without a path.",
+  "Set the Cloudflare Worker URL before signing in.": "Set the Cloudflare Worker URL before signing in.",
+  "Preparing your connection…": "Preparing your connection…",
+  "Reconnecting…": "Reconnecting…",
+  "Attendance connection": "Attendance connection",
+  "Retry connection": "Retry connection",
+  "Could not connect to the attendance service. Check your internet connection and retry.": "Could not connect to the attendance service. Check your internet connection and retry.",
+  "The attendance service is unavailable. Please try again.": "The attendance service is unavailable. Please try again.",
+  "The connection changed while this request was in progress. Review the latest records before trying again; the request may already have completed.": "The connection changed while this request was in progress. Review the latest records before trying again; the request may already have completed."
 }
