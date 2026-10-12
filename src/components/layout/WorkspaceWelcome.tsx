@@ -25,7 +25,7 @@ export function WorkspaceWelcome() {
           </ButtonLink>
           <Button onClick={startTour} variant="secondary">
             <Compass size={16} />
-            {t('Take Guided Tour ✨')}
+            {t('Take Guided Tour')}
           </Button>
         </div>
       </Panel>

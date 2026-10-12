@@ -37,20 +37,20 @@ interface RectState {
 function StepIcon({ icon }: { icon?: TutorialIconType }) {
   switch (icon) {
     case 'calendar':
-      return <CalendarDays size={22} />;
+      return <CalendarDays size={20} />;
     case 'book':
-      return <BookOpen size={22} />;
+      return <BookOpen size={20} />;
     case 'users':
-      return <Users size={22} />;
+      return <Users size={20} />;
     case 'file':
-      return <FileDown size={22} />;
+      return <FileDown size={20} />;
     case 'user':
-      return <User size={22} />;
+      return <User size={20} />;
     case 'trophy':
-      return <Trophy size={24} />;
+      return <Trophy size={22} />;
     case 'sparkles':
     default:
-      return <Sparkles size={22} />;
+      return <Sparkles size={20} />;
   }
 }
 
@@ -123,7 +123,6 @@ export function TutorialSpotlight({
           left = rect.x + rect.width + 16;
           top = rect.y + rect.height / 2 - 140;
           if (left + cardWidth > window.innerWidth - 16) {
-            // Not enough room on right, place below or left
             left = Math.max(16, rect.x);
             top = rect.y + rect.height + 16;
           }
@@ -224,12 +223,12 @@ export function TutorialSpotlight({
         <rect
           width="100%"
           height="100%"
-          fill="rgba(15, 23, 42, 0.78)"
+          fill="rgba(15, 23, 42, 0.65)"
           mask="url(#tutorial-spotlight-mask)"
         />
       </svg>
 
-      {/* Pulsing Glowing Ring over Target Element */}
+      {/* Ring over Target Element */}
       {targetRect && (
         <div
           className="tutorial-spotlight-ring"
@@ -243,66 +242,66 @@ export function TutorialSpotlight({
         />
       )}
 
-      {/* Floating Game-Style Quest Dialogue Card */}
+      {/* Quest Dialogue Card */}
       <div
         className="tutorial-card"
         style={{ top: `${cardPos.top}px`, left: `${cardPos.left}px` }}
         role="region"
         aria-label={t('Tutorial Quest Guide')}
       >
-        {/* Header: Quest Badge, Step counter & Close */}
+        {/* Header */}
         <div className="flex items-center justify-between gap-2 mb-3">
           <div className="flex items-center gap-2">
             <span className="tutorial-badge">
-              <Sparkles size={12} />
+              <Sparkles size={11} />
               {t(step.questBadge)}
             </span>
-            <span className="text-xs font-semibold text-slate-400">
+            <span className="text-xs font-semibold text-muted">
               {stepIndex + 1} / {totalSteps}
             </span>
           </div>
           <button
             type="button"
             onClick={onSkip}
-            className="text-slate-400 hover:text-white p-1 rounded-lg transition-colors"
+            className="text-slate-400 hover:text-slate-600 p-1 rounded-lg transition-colors"
             aria-label={t('Skip tutorial')}
             title={t('Skip tutorial (Esc)')}
           >
-            <X size={18} />
+            <X size={17} />
           </button>
         </div>
 
-        {/* Quest XP Progress Bar */}
+        {/* Progress Bar */}
         <div className="tutorial-progress-track mb-4">
           <div className="tutorial-progress-bar" style={{ width: `${progressPercent}%` }} />
         </div>
 
-        {/* Mascot & Title */}
-        <div className="flex items-start gap-3.5 mb-3">
+        {/* Icon & Title */}
+        <div className="flex items-start gap-3 mb-3">
           <div className="tutorial-mascot">
             <StepIcon icon={step.icon} />
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-lg font-bold text-white leading-snug">{t(step.title)}</h3>
-            <p className="text-xs text-indigo-300 font-medium">
+            <h3 className="text-lg font-bold leading-snug">{t(step.title)}</h3>
+            <p className="text-xs text-brand font-medium">
               {isLastStep ? t('Orientation Complete') : t('Interactive Walkthrough')}
             </p>
           </div>
         </div>
 
-        {/* Narrative Description */}
-        <p className="text-sm text-slate-200 leading-relaxed mb-4">{t(step.description)}</p>
+        {/* Description */}
+        <p className="text-sm text-muted leading-relaxed mb-4">{t(step.description)}</p>
 
-        {/* Pro-Tip Box */}
+        {/* Tip */}
         {step.tip && (
           <div className="tutorial-tip-box mb-5">
-            <Lightbulb size={16} className="text-amber-400 shrink-0 mt-0.5" />
+            <Lightbulb size={15} className="text-brand shrink-0 mt-0.5" />
             <span>{t(step.tip)}</span>
           </div>
         )}
 
-        {/* Footer Navigation Buttons */}
-        <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-700/60">
+        {/* Footer */}
+        <div className="flex items-center justify-between gap-2 pt-3 border-t border-slate-200">
           <button
             type="button"
             onClick={onPrev}
@@ -314,15 +313,15 @@ export function TutorialSpotlight({
             <span className="hidden sm:inline">{t('Back')}</span>
           </button>
 
-          {/* Dots Indicator */}
+          {/* Dots */}
           <div className="flex items-center gap-1.5" aria-hidden="true">
             {Array.from({ length: totalSteps }).map((_, i) => (
               <span
                 key={i}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
                   i === stepIndex
-                    ? 'w-5 bg-indigo-400 shadow-[0_0_8px_rgba(129,140,248,0.8)]'
-                    : 'w-1.5 bg-slate-600'
+                    ? 'w-5 bg-brand'
+                    : 'w-1.5 bg-slate-300'
                 }`}
               />
             ))}
@@ -337,11 +336,11 @@ export function TutorialSpotlight({
             {isLastStep ? (
               <>
                 <CheckCircle2 size={16} />
-                <span>{t('Get Started 🚀')}</span>
+                <span>{t('Get Started')}</span>
               </>
             ) : (
               <>
-                <span>{t('Next Quest')}</span>
+                <span>{t('Next')}</span>
                 <ArrowRight size={15} />
               </>
             )}
