@@ -31,7 +31,7 @@ export function MainLayout({ children }: { children: ReactNode }) {
         />
       ) : !data ? (
         <p>{t('Loading…')}</p>
-      ) : !data.semesters.length && pathname !== '/semesters' ? (
+      ) : !data.semesters.length && pathname !== '/semesters' && pathname !== '/profile' ? (
         <WorkspaceWelcome />
       ) : (
         <>

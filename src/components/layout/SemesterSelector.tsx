@@ -10,6 +10,7 @@ export function SemesterSelector() {
   const { data } = useAppData();
   const { semesterId, setSemesterId } = useWorkspace();
   const semester = data && selectedSemester(data, semesterId);
+  if (!data?.semesters.length) return null;
   return (
     <Select
       aria-label={t('Semester')}
