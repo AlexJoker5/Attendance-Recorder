@@ -46,7 +46,7 @@
 .tutorial-card {
   position: fixed;
   z-index: 10000;
-  max-width: 440px;
+  max-width: 460px;
   width: calc(100vw - 32px);
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -116,6 +116,20 @@
   gap: 9px;
 }
 
+.tutorial-caution-box {
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+  border-left: 3px solid #f59e0b;
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #92400e;
+  font-size: 12.5px;
+  line-height: 1.5;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
 .tutorial-btn-primary {
   background: #4f46e5;
   color: #ffffff !important;
@@ -163,7 +177,7 @@
   cursor: not-allowed;
 }
 
-/* Modal Prompt Styles */
+/* Modal Prompt / Guide Hub Styles */
 .tutorial-prompt-dialog {
   position: fixed;
   inset: 0;
@@ -181,24 +195,71 @@
   background: #ffffff;
   border: 1px solid #e2e8f0;
   box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.2);
-  border-radius: 18px;
-  padding: 30px;
-  max-width: 460px;
+  border-radius: 20px;
+  padding: 28px;
+  max-width: 640px;
   width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
   color: #182230;
-  text-align: center;
   position: relative;
 }
 
+.tutorial-track-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+  margin-bottom: 20px;
+}
+
+.tutorial-track-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  text-align: left;
+  transition: all 0.18s ease;
+  cursor: pointer;
+}
+
+.tutorial-track-item:hover {
+  border-color: #c7d2fe;
+  background: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+.tutorial-track-item.is-active {
+  border-color: #4f46e5;
+  background: #f5f3ff;
+}
+
+.tutorial-track-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4f46e5;
+  flex-shrink: 0;
+}
+
 .tutorial-celebration-badge {
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
   background: #eef2ff;
   border: 1px solid #c7d2fe;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: #4f46e5;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }

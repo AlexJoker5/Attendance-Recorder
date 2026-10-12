@@ -29,29 +29,31 @@ export default function GroupDetailsPage() {
         title={group.name}
         description={semester.name}
         actions={
-          <>
-            <Button disabled={readonly} onClick={() => setDialog('import')}>
+          <div data-tour="group-actions-header" className="flex items-center gap-2 flex-wrap">
+            <Button disabled={readonly} data-tour="group-import-btn" onClick={() => setDialog('import')}>
               <ArrowDownToLine size={16} />
               {t('Import students')}
             </Button>
             <Button disabled={readonly} onClick={() => setDialog('enroll')}>
               {t('Enroll existing student')}
             </Button>
-            <Button variant="primary" disabled={readonly} onClick={() => setDialog('class')}>
+            <Button variant="primary" disabled={readonly} data-tour="class-create-btn" onClick={() => setDialog('class')}>
               <Plus size={16} />
               {t('Create class')}
             </Button>
-          </>
+          </div>
         }
       />
       {group.archived && <p className="callout warning mb-5">{t('Archived group')}</p>}
       <GroupClasses data={data} group={group} />
-      <GroupEnrollmentPanel
-        rows={rows}
-        promptUnenrollSingle={model.promptUnenrollSingle}
-        readonly={readonly}
-        setDialog={setDialog}
-      />
+      <div data-tour="group-enrollment-panel">
+        <GroupEnrollmentPanel
+          rows={rows}
+          promptUnenrollSingle={model.promptUnenrollSingle}
+          readonly={readonly}
+          setDialog={setDialog}
+        />
+      </div>
       <div className="actions mt-6 flex gap-3 flex-wrap">
         <Button
           variant="secondary"

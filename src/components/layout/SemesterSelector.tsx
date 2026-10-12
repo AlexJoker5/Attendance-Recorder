@@ -12,24 +12,26 @@ export function SemesterSelector() {
   const semester = data && selectedSemester(data, semesterId);
   if (!data?.semesters.length) return null;
   return (
-    <Select
-      aria-label={t('Semester')}
-      value={semester?.id || ''}
-      onValueChange={(value) => {
-        setSemesterId(value);
-        navigate('/');
-      }}
-      options={
-        data?.semesters.map((item) => ({
-          value: item.id,
-          label: (
-            <>
-              {item.name}
-              {item.archived ? ' · ' + t('Archived') : ''}
-            </>
-          ),
-        })) ?? []
-      }
-    />
+    <div data-tour="topbar-semester-selector">
+      <Select
+        aria-label={t('Semester')}
+        value={semester?.id || ''}
+        onValueChange={(value) => {
+          setSemesterId(value);
+          navigate('/');
+        }}
+        options={
+          data?.semesters.map((item) => ({
+            value: item.id,
+            label: (
+              <>
+                {item.name}
+                {item.archived ? ' · ' + t('Archived') : ''}
+              </>
+            ),
+          })) ?? []
+        }
+      />
+    </div>
   );
 }

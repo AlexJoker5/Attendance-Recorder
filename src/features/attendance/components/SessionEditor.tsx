@@ -47,7 +47,7 @@ export function SessionEditor({ session }: { session: ClassSession }) {
           <>
             <ExportButtons onExport={exportAttendance} />
             {!readonly && (
-              <ButtonLink className="primary" to={'/imports/' + session.id}>
+              <ButtonLink className="primary" data-tour="session-zoom-import-btn" to={'/imports/' + session.id}>
                 <ArrowDownToLine size={16} />
                 {t('Import Zoom report')}
               </ButtonLink>
@@ -68,20 +68,22 @@ export function SessionEditor({ session }: { session: ClassSession }) {
         source={source}
         setSource={setSource}
       />
-      <SessionAttendanceForm
-        handleSubmit={handleSubmit}
-        save={save}
-        setError={setError}
-        filter={filter}
-        source={source}
-        students={students}
-        readonly={readonly}
-        register={register}
-        control={control}
-        formState={formState}
-        session={session}
-        setDialog={setDialog}
-      />
+      <div data-tour="session-attendance-status">
+        <SessionAttendanceForm
+          handleSubmit={handleSubmit}
+          save={save}
+          setError={setError}
+          filter={filter}
+          source={source}
+          students={students}
+          readonly={readonly}
+          register={register}
+          control={control}
+          formState={formState}
+          session={session}
+          setDialog={setDialog}
+        />
+      </div>
       <p className="muted mt-4">
         {t(
           'Finalization applies to the full session, regardless of table filters. Active unmarked students become Absent; earlier pre-enrollment sessions receive Present credit.',

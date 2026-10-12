@@ -18,7 +18,7 @@ export function NavbarLayout({
 }) {
   const { t } = useTranslation();
   const crumbs = useBreadcrumbs();
-  const { startTour } = useTutorial();
+  const { openGuideHub } = useTutorial();
   return (
     <header className="topbar">
       <div className="actions min-w-0">
@@ -39,7 +39,7 @@ export function NavbarLayout({
         <Button
           aria-label={t('Tutorial Guide')}
           title={t('Tutorial Guide')}
-          onClick={startTour}
+          onClick={openGuideHub}
         >
           <Compass size={16} />
           <span className="desktop-label">{t('Tutorial')}</span>

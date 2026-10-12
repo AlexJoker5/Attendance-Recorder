@@ -60,7 +60,7 @@ export default function ClassDetailsPage() {
             <Button disabled={readonly} onClick={() => setDialog('edit')}>
               {t('Edit class')}
             </Button>
-            <Button variant="primary" disabled={readonly} onClick={() => setDialog('session')}>
+            <Button variant="primary" disabled={readonly} data-tour="class-add-session-btn" onClick={() => setDialog('session')}>
               <Plus size={16} />
               {t('Add session')}
             </Button>
@@ -70,23 +70,25 @@ export default function ClassDetailsPage() {
       <ClassScheduleSummary cls={cls} />
       <ClassViewTabs view={view} setView={setView} />
       {error && <ErrorState>{error}</ErrorState>}
-      <ClassAttendanceOverview
-        view={view}
-        state={state}
-        setState={setState}
-        type={type}
-        setType={setType}
-        from={from}
-        setFrom={setFrom}
-        to={to}
-        setTo={setTo}
-        rows={rows}
-        readonly={readonly}
-        results={results}
-        restoreClassSession={restoreClassSession}
-        requestRemoveClassSession={requestRemoveClassSession}
-        isRemovingSession={isRemovingSession}
-      />
+      <div data-tour="class-sessions-table">
+        <ClassAttendanceOverview
+          view={view}
+          state={state}
+          setState={setState}
+          type={type}
+          setType={setType}
+          from={from}
+          setFrom={setFrom}
+          to={to}
+          setTo={setTo}
+          rows={rows}
+          readonly={readonly}
+          results={results}
+          restoreClassSession={restoreClassSession}
+          requestRemoveClassSession={requestRemoveClassSession}
+          isRemovingSession={isRemovingSession}
+        />
+      </div>
       <ClassLifecycleActions
         readonly={readonly}
         cls={cls}

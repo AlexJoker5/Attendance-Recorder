@@ -7,7 +7,7 @@ export function ScheduleChangePreview({ review, existing, plan }: ScheduleChange
   const { t } = useTranslation();
   return (
     review && (
-      <div className="callout">
+      <div className="callout" data-tour="class-preview-box">
         <strong>{t('Review schedule changes')}</strong>
         {existing && plan ? (
           [

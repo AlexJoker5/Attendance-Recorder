@@ -36,7 +36,7 @@ export function WorkbookMappingFields({
   const { t } = useTranslation();
   if (!book) return null;
   return (
-    <div className="grid md:grid-cols-2 gap-5">
+    <div className="grid md:grid-cols-2 gap-5" data-tour="import-column-mapping">
       <Field htmlFor="worksheet" label={t('Worksheet')}>
         <Select
           id="worksheet"
@@ -49,20 +49,22 @@ export function WorkbookMappingFields({
           options={Object.keys(book.worksheets).map((name) => ({ value: name, label: name }))}
         />
       </Field>
-      <Field htmlFor="header-row" label={t('Header row')}>
-        <Input
-          id="header-row"
-          type="number"
-          min={1}
-          max={rows.length}
-          value={header}
-          onChange={(event) => {
-            const value = Math.max(1, Number(event.target.value));
-            setHeader(value);
-            detect(rows[value - 1] || []);
-          }}
-        />
-      </Field>
+      <div data-tour="import-header-row">
+        <Field htmlFor="header-row" label={t('Header row')}>
+          <Input
+            id="header-row"
+            type="number"
+            min={1}
+            max={rows.length}
+            value={header}
+            onChange={(event) => {
+              const value = Math.max(1, Number(event.target.value));
+              setHeader(value);
+              detect(rows[value - 1] || []);
+            }}
+          />
+        </Field>
+      </div>
       <Field htmlFor="name-column" label={t('Name column')}>
         <Select
           id="name-column"

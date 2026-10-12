@@ -1,10 +1,15 @@
 import {
+  AlertTriangle,
   ArrowLeft,
   ArrowRight,
   BookOpen,
   CalendarDays,
   CheckCircle2,
-  FileDown,
+  Clock,
+  Compass,
+  FileSpreadsheet,
+  FileText,
+  Layers,
   Lightbulb,
   Sparkles,
   Trophy,
@@ -15,16 +20,18 @@ import {
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
-import type { TutorialIconType, TutorialStep } from '../types/tutorialTypes';
+import type { TutorialIconType, TutorialStep, TutorialTrackId } from '../types/tutorialTypes';
 
 interface Props {
   isActive: boolean;
   step: TutorialStep | null;
   stepIndex: number;
   totalSteps: number;
+  activeTrackId: TutorialTrackId;
   onNext: () => void;
   onPrev: () => void;
   onSkip: () => void;
+  onOpenGuideHub?: () => void;
 }
 
 interface RectState {
@@ -43,7 +50,17 @@ function StepIcon({ icon }: { icon?: TutorialIconType }) {
     case 'users':
       return <Users size={20} />;
     case 'file':
-      return <FileDown size={20} />;
+      return <FileText size={20} />;
+    case 'file-spreadsheet':
+      return <FileSpreadsheet size={20} />;
+    case 'layers':
+      return <Layers size={20} />;
+    case 'clock':
+      return <Clock size={20} />;
+    case 'check-circle':
+      return <CheckCircle2 size={20} />;
+    case 'alert-triangle':
+      return <AlertTriangle size={20} />;
     case 'user':
       return <User size={20} />;
     case 'trophy':
@@ -59,9 +76,11 @@ export function TutorialSpotlight({
   step,
   stepIndex,
   totalSteps,
+  activeTrackId,
   onNext,
   onPrev,
   onSkip,
+  onOpenGuideHub,
 }: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -79,8 +98,8 @@ export function TutorialSpotlight({
       if (!step?.targetSelector) {
         setTargetRect(null);
         // Center card in viewport
-        const cardWidth = Math.min(440, window.innerWidth - 32);
-        const cardHeight = 360;
+        const cardWidth = Math.min(460, window.innerWidth - 32);
+        const cardHeight = 380;
         setCardPos({
           left: Math.max(16, (window.innerWidth - cardWidth) / 2),
           top: Math.max(20, (window.innerHeight - cardHeight) / 2),
@@ -90,9 +109,9 @@ export function TutorialSpotlight({
 
       const element = document.querySelector<HTMLElement>(step.targetSelector);
       if (!element) {
-        // Fallback to center if element not in DOM
+        // Fallback to center if element not currently in DOM
         setTargetRect(null);
-        const cardWidth = Math.min(440, window.innerWidth - 32);
+        const cardWidth = Math.min(460, window.innerWidth - 32);
         setCardPos({
           left: Math.max(16, (window.innerWidth - cardWidth) / 2),
           top: Math.max(40, (window.innerHeight - 380) / 2),
@@ -111,7 +130,7 @@ export function TutorialSpotlight({
       };
       setTargetRect(rect);
 
-      const cardWidth = Math.min(440, window.innerWidth - 32);
+      const cardWidth = Math.min(460, window.innerWidth - 32);
       const cardHeight = 380;
       let left = 16;
       let top = 16;
@@ -195,7 +214,7 @@ export function TutorialSpotlight({
 
   const handleFinishAction = () => {
     onNext();
-    if (isLastStep) {
+    if (isLastStep && activeTrackId === 'overview') {
       navigate('/semesters');
     }
   };
@@ -256,19 +275,33 @@ export function TutorialSpotlight({
               <Sparkles size={11} />
               {t(step.questBadge)}
             </span>
-            <span className="text-xs font-semibold text-muted">
+            <span className="text-xs font-semibold text-slate-500">
               {stepIndex + 1} / {totalSteps}
             </span>
           </div>
-          <button
-            type="button"
-            onClick={onSkip}
-            className="text-slate-400 hover:text-slate-600 p-1 rounded-lg transition-colors"
-            aria-label={t('Skip tutorial')}
-            title={t('Skip tutorial (Esc)')}
-          >
-            <X size={17} />
-          </button>
+
+          <div className="flex items-center gap-1">
+            {onOpenGuideHub && (
+              <button
+                type="button"
+                onClick={onOpenGuideHub}
+                className="text-xs text-brand hover:text-indigo-800 font-medium px-2 py-1 rounded transition-colors flex items-center gap-1"
+                title={t('View all guides')}
+              >
+                <Compass size={13} />
+                <span>{t('All Guides')}</span>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onSkip}
+              className="text-slate-400 hover:text-slate-600 p-1 rounded-lg transition-colors"
+              aria-label={t('Skip tutorial')}
+              title={t('Skip tutorial (Esc)')}
+            >
+              <X size={17} />
+            </button>
+          </div>
         </div>
 
         {/* Progress Bar */}
@@ -282,21 +315,34 @@ export function TutorialSpotlight({
             <StepIcon icon={step.icon} />
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-lg font-bold leading-snug">{t(step.title)}</h3>
+            <h3 className="text-base font-bold leading-snug text-slate-900">{t(step.title)}</h3>
             <p className="text-xs text-brand font-medium">
-              {isLastStep ? t('Orientation Complete') : t('Interactive Walkthrough')}
+              {isLastStep ? t('Guide Complete') : t('Interactive Walkthrough')}
             </p>
           </div>
         </div>
 
         {/* Description */}
-        <p className="text-sm text-muted leading-relaxed mb-4">{t(step.description)}</p>
+        <p className="text-sm text-slate-600 leading-relaxed mb-4 whitespace-pre-line">
+          {t(step.description)}
+        </p>
 
-        {/* Tip */}
+        {/* Caution Notice (for traps like column names, header rows, date bounds) */}
+        {step.caution && (
+          <div className="tutorial-caution-box mb-4">
+            <AlertTriangle size={16} className="text-amber-600 shrink-0 mt-0.5" />
+            <div className="text-xs leading-relaxed whitespace-pre-line">
+              <strong className="block font-semibold mb-0.5">{t('Pay Special Attention:')}</strong>
+              {t(step.caution)}
+            </div>
+          </div>
+        )}
+
+        {/* Tip Box */}
         {step.tip && (
           <div className="tutorial-tip-box mb-5">
             <Lightbulb size={15} className="text-brand shrink-0 mt-0.5" />
-            <span>{t(step.tip)}</span>
+            <div className="text-xs leading-relaxed whitespace-pre-line">{t(step.tip)}</div>
           </div>
         )}
 
@@ -313,15 +359,13 @@ export function TutorialSpotlight({
             <span className="hidden sm:inline">{t('Back')}</span>
           </button>
 
-          {/* Dots */}
+          {/* Step dots */}
           <div className="flex items-center gap-1.5" aria-hidden="true">
             {Array.from({ length: totalSteps }).map((_, i) => (
               <span
                 key={i}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === stepIndex
-                    ? 'w-5 bg-brand'
-                    : 'w-1.5 bg-slate-300'
+                  i === stepIndex ? 'w-5 bg-brand' : 'w-1.5 bg-slate-300'
                 }`}
               />
             ))}
@@ -336,7 +380,7 @@ export function TutorialSpotlight({
             {isLastStep ? (
               <>
                 <CheckCircle2 size={16} />
-                <span>{t('Get Started')}</span>
+                <span>{t('Finish Guide')}</span>
               </>
             ) : (
               <>

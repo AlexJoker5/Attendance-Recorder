@@ -19,7 +19,7 @@ export default function SemestersPage() {
           'Create a fresh student group for every semester. Student profiles can be reused.',
         )}
         actions={
-          <Button variant="primary" onClick={() => setEditing('new')}>
+          <Button variant="primary" data-tour="semester-create-btn" onClick={() => setEditing('new')}>
             <Plus size={16} />
             {t('Create semester')}
           </Button>

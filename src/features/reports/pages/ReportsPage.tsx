@@ -34,7 +34,7 @@ export default function ReportsPage() {
         title={t('Reports')}
         description={t('Review attendance results and export the selected semester.')}
         actions={
-          <>
+          <div data-tour="report-export-buttons" className="flex items-center gap-2">
             <Button onClick={() => void exportResults('csv')}>
               <ArrowUpFromLine size={16} />
               CSV
@@ -43,33 +43,39 @@ export default function ReportsPage() {
               <ArrowUpFromLine size={16} />
               XLSX
             </Button>
-          </>
+          </div>
         }
       />
       {error && <ErrorState>{error}</ErrorState>}
-      <ReportFilters
-        group={group}
-        setGroup={setGroup}
-        setClass={setClass}
-        groups={groups}
-        cls={cls}
-        classes={classes}
-        result={result}
-        setResult={setResult}
-      />
-      <AttendanceResultsPanel
-        group={group}
-        cls={cls}
-        result={result}
-        semester={semester}
-        rows={rows}
-      />
-      <AttendanceMatrixExport
-        matrixClass={matrixClass}
-        classes={classes}
-        setMatrixClass={setMatrixClass}
-        exportMatrix={exportMatrix}
-      />
+      <div data-tour="report-filters">
+        <ReportFilters
+          group={group}
+          setGroup={setGroup}
+          setClass={setClass}
+          groups={groups}
+          cls={cls}
+          classes={classes}
+          result={result}
+          setResult={setResult}
+        />
+      </div>
+      <div data-tour="report-results-panel">
+        <AttendanceResultsPanel
+          group={group}
+          cls={cls}
+          result={result}
+          semester={semester}
+          rows={rows}
+        />
+      </div>
+      <div data-tour="report-matrix-section">
+        <AttendanceMatrixExport
+          matrixClass={matrixClass}
+          classes={classes}
+          setMatrixClass={setMatrixClass}
+          exportMatrix={exportMatrix}
+        />
+      </div>
     </>
   );
 }

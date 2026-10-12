@@ -31,7 +31,7 @@ export default function GroupsPage() {
         title={t('Groups & classes')}
         description={semester.name}
         actions={
-          <Button variant="primary" disabled={readonly} onClick={() => setEditing('new')}>
+          <Button variant="primary" data-tour="group-create-btn" disabled={readonly} onClick={() => setEditing('new')}>
             <Plus size={16} />
             {t('Create group')}
           </Button>
@@ -45,14 +45,16 @@ export default function GroupsPage() {
         value={search}
         onChange={(event) => setSearch(event.target.value)}
       />
-      <GroupList
-        data={data}
-        semester={semester}
-        search={search}
-        readonly={readonly}
-        setEditing={setEditing}
-        setClassGroup={setClassGroup}
-      />
+      <div data-tour="group-list">
+        <GroupList
+          data={data}
+          semester={semester}
+          search={search}
+          readonly={readonly}
+          setEditing={setEditing}
+          setClassGroup={setClassGroup}
+        />
+      </div>
       {!data.groups.some((group) => group.semesterId === semester.id) && (
         <Panel>
           <EmptyState>{t('No groups yet. Create a fresh group for this semester.')}</EmptyState>

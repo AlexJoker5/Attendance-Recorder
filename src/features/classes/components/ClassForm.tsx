@@ -15,23 +15,25 @@ export function ClassForm(props: Parameters<typeof useClassForm>[0]) {
       <p className="muted mb-5">
         {group.name} · {APP_TIME_ZONE}
       </p>
-      <RecordForm
-        schema={classSchema}
-        defaults={
-          existing || {
-            name: '',
-            ...DEFAULT_CLASS_SCHEDULE,
-            startDate: semester.start,
-            endDate: semester.end,
+      <div data-tour="class-schedule-fields">
+        <RecordForm
+          schema={classSchema}
+          defaults={
+            existing || {
+              name: '',
+              ...DEFAULT_CLASS_SCHEDULE,
+              startDate: semester.start,
+              endDate: semester.end,
+            }
           }
-        }
-        fields={classFormFields(semester)}
-        label={!review ? 'Preview changes' : existing ? 'Update' : 'Create'}
-        onEdit={() => setReview(null)}
-        onSave={saveClass}
-      >
-        <ScheduleChangePreview review={review} existing={existing} plan={plan} />
-      </RecordForm>
+          fields={classFormFields(semester)}
+          label={!review ? 'Preview changes' : existing ? 'Update' : 'Create'}
+          onEdit={() => setReview(null)}
+          onSave={saveClass}
+        >
+          <ScheduleChangePreview review={review} existing={existing} plan={plan} />
+        </RecordForm>
+      </div>
     </Dialog>
   );
 }

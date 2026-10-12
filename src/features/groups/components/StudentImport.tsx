@@ -28,22 +28,25 @@ export function StudentImport(props: Parameters<typeof useStudentImport>[0]) {
         {group.name} · {t('Enrollment includes every class in this group.')}
       </p>
       <div className="form-stack">
-        <Field htmlFor="joined" label={t('Enrollment date')}>
-          <Input
-            id="joined"
-            type="date"
-            min={semester.start}
-            max={semester.end}
-            value={joined}
-            onChange={(event) => setJoined(event.target.value)}
-          />
-        </Field>
+        <div data-tour="import-enrollment-date">
+          <Field htmlFor="joined" label={t('Enrollment date')}>
+            <Input
+              id="joined"
+              type="date"
+              min={semester.start}
+              max={semester.end}
+              value={joined}
+              onChange={(event) => setJoined(event.target.value)}
+            />
+          </Field>
+        </div>
         <WorkbookMapper onReview={reviewWorkbook} />
         {rows.length > 0 && (
           <>
             <StudentImportTable rows={rows} setRows={setRows} />
             <Button
               variant="primary"
+              data-tour="import-review-btn"
               disabled={!rows.some((row) => row.selected)}
               onClick={importStudents}
             >

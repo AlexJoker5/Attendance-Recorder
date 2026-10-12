@@ -27,7 +27,9 @@ export function WorkbookMapper(props: Parameters<typeof useWorkbookMapper>[0]) {
   } = model;
   return (
     <div className="form-stack">
-      <WorkbookFileInput busy={busy} loadWorkbook={loadWorkbook} />
+      <div data-tour="import-file-upload">
+        <WorkbookFileInput busy={busy} loadWorkbook={loadWorkbook} />
+      </div>
       {busy && <p role="status">{t('Reading spreadsheet…')}</p>}
       {book && (
         <>
@@ -46,7 +48,7 @@ export function WorkbookMapper(props: Parameters<typeof useWorkbookMapper>[0]) {
             emailColumn={emailColumn}
             setEmailColumn={setEmailColumn}
           />
-          <Button variant="primary" onClick={reviewMappedRows}>
+          <Button variant="primary" data-tour="import-review-btn" onClick={reviewMappedRows}>
             {t('Review matches')}
           </Button>
         </>

@@ -14,14 +14,16 @@ export function SemestersTablePanel({
   archive,
 }: SemestersTablePanelProps) {
   return (
-    <Panel>
-      <SemestersTable
-        data={data}
-        setSemesterId={setSemesterId}
-        navigate={navigate}
-        setEditing={setEditing}
-        archive={archive}
-      />
-    </Panel>
+    <div data-tour="semesters-table">
+      <Panel>
+        <SemestersTable
+          data={data}
+          setSemesterId={setSemesterId}
+          navigate={navigate}
+          setEditing={setEditing}
+          archive={archive}
+        />
+      </Panel>
+    </div>
   );
 }

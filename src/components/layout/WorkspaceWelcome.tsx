@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 export function WorkspaceWelcome() {
   const { t } = useTranslation();
-  const { startTour } = useTutorial();
+  const { openGuideHub } = useTutorial();
   return (
     <>
       <PageHeading
@@ -23,9 +23,9 @@ export function WorkspaceWelcome() {
           <ButtonLink to="/semesters" variant="primary">
             {t('Create your first semester')}
           </ButtonLink>
-          <Button onClick={startTour} variant="secondary">
+          <Button onClick={openGuideHub} variant="secondary">
             <Compass size={16} />
-            {t('Take Guided Tour')}
+            {t('Tutorial Guides')}
           </Button>
         </div>
       </Panel>
