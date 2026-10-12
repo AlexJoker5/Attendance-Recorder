@@ -46,6 +46,13 @@ export interface TutorialStep {
   icon: TutorialIconType;
 }
 
+export interface TutorialProgress {
+  activeTrackId: TutorialTrackId;
+  stepIndices: Partial<Record<TutorialTrackId, number>>;
+  completedTracks: TutorialTrackId[];
+  isAllCompleted: boolean;
+}
+
 export interface TutorialContextValue {
   isActive: boolean;
   isPromptOpen: boolean;
@@ -53,11 +60,14 @@ export interface TutorialContextValue {
   currentStepIndex: number;
   currentStep: TutorialStep | null;
   totalSteps: number;
+  progress: TutorialProgress;
   availableTracks: TutorialTrackInfo[];
-  startTour: (trackId?: TutorialTrackId) => void;
+  startTour: (trackId?: TutorialTrackId, stepIdx?: number) => void;
+  resumeTour: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  skipTour: () => void;
+  skipCurrentTrack: () => void;
+  skipAllTutorials: () => void;
   dismissPrompt: () => void;
   openGuideHub: () => void;
 }

@@ -11,6 +11,7 @@ import {
   FileText,
   Layers,
   Lightbulb,
+  SkipForward,
   Sparkles,
   Trophy,
   User,
@@ -30,7 +31,8 @@ interface Props {
   activeTrackId: TutorialTrackId;
   onNext: () => void;
   onPrev: () => void;
-  onSkip: () => void;
+  onSkipTrack: () => void;
+  onSkipAll: () => void;
   onOpenGuideHub?: () => void;
 }
 
@@ -79,13 +81,15 @@ export function TutorialSpotlight({
   activeTrackId,
   onNext,
   onPrev,
-  onSkip,
+  onSkipTrack,
+  onSkipAll,
   onOpenGuideHub,
 }: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [targetRect, setTargetRect] = useState<RectState | null>(null);
   const [cardPos, setCardPos] = useState<{ top: number; left: number }>({ top: 100, left: 100 });
+  const [showSkipConfirm, setShowSkipConfirm] = useState(false);
 
   // Update target rect & card placement
   useLayoutEffect(() => {
@@ -98,8 +102,8 @@ export function TutorialSpotlight({
       if (!step?.targetSelector) {
         setTargetRect(null);
         // Center card in viewport
-        const cardWidth = Math.min(460, window.innerWidth - 32);
-        const cardHeight = 380;
+        const cardWidth = Math.min(480, window.innerWidth - 32);
+        const cardHeight = 390;
         setCardPos({
           left: Math.max(16, (window.innerWidth - cardWidth) / 2),
           top: Math.max(20, (window.innerHeight - cardHeight) / 2),
@@ -111,10 +115,10 @@ export function TutorialSpotlight({
       if (!element) {
         // Fallback to center if element not currently in DOM
         setTargetRect(null);
-        const cardWidth = Math.min(460, window.innerWidth - 32);
+        const cardWidth = Math.min(480, window.innerWidth - 32);
         setCardPos({
           left: Math.max(16, (window.innerWidth - cardWidth) / 2),
-          top: Math.max(40, (window.innerHeight - 380) / 2),
+          top: Math.max(40, (window.innerHeight - 390) / 2),
         });
         return;
       }
@@ -130,8 +134,8 @@ export function TutorialSpotlight({
       };
       setTargetRect(rect);
 
-      const cardWidth = Math.min(460, window.innerWidth - 32);
-      const cardHeight = 380;
+      const cardWidth = Math.min(480, window.innerWidth - 32);
+      const cardHeight = 390;
       let left = 16;
       let top = 16;
 
@@ -193,7 +197,7 @@ export function TutorialSpotlight({
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') {
-        onSkip();
+        setShowSkipConfirm(true);
       } else if (event.key === 'ArrowRight' || (event.key === 'Enter' && !event.shiftKey)) {
         event.preventDefault();
         onNext();
@@ -205,7 +209,7 @@ export function TutorialSpotlight({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isActive, onNext, onPrev, onSkip]);
+  }, [isActive, onNext, onPrev]);
 
   if (!isActive || !step) return null;
 
@@ -280,24 +284,37 @@ export function TutorialSpotlight({
             </span>
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             {onOpenGuideHub && (
               <button
                 type="button"
                 onClick={onOpenGuideHub}
                 className="text-xs text-brand hover:text-indigo-800 font-medium px-2 py-1 rounded transition-colors flex items-center gap-1"
-                title={t('View all guides')}
+                title={t('View all guides & saved progress')}
               >
                 <Compass size={13} />
-                <span>{t('All Guides')}</span>
+                <span className="hidden sm:inline">{t('All Guides')}</span>
               </button>
             )}
+
+            {/* Skip This Topic Button */}
             <button
               type="button"
-              onClick={onSkip}
-              className="text-slate-400 hover:text-slate-600 p-1 rounded-lg transition-colors"
-              aria-label={t('Skip tutorial')}
-              title={t('Skip tutorial (Esc)')}
+              onClick={onSkipTrack}
+              className="text-xs text-slate-500 hover:text-slate-800 font-medium px-2 py-1 rounded transition-colors flex items-center gap-1 bg-slate-50 hover:bg-slate-100 border border-slate-200"
+              title={t('Skip this topic and move to next')}
+            >
+              <SkipForward size={12} />
+              <span>{t('Skip topic')}</span>
+            </button>
+
+            {/* Skip Whole Tutorial Button (X) */}
+            <button
+              type="button"
+              onClick={() => setShowSkipConfirm(true)}
+              className="text-slate-400 hover:text-slate-700 p-1 rounded-lg transition-colors"
+              aria-label={t('Exit tutorial')}
+              title={t('Exit / Skip whole tutorial')}
             >
               <X size={17} />
             </button>
@@ -309,87 +326,138 @@ export function TutorialSpotlight({
           <div className="tutorial-progress-bar" style={{ width: `${progressPercent}%` }} />
         </div>
 
-        {/* Icon & Title */}
-        <div className="flex items-start gap-3 mb-3">
-          <div className="tutorial-mascot">
-            <StepIcon icon={step.icon} />
-          </div>
-          <div className="min-w-0 flex-1">
-            <h3 className="text-base font-bold leading-snug text-slate-900">{t(step.title)}</h3>
-            <p className="text-xs text-brand font-medium">
-              {isLastStep ? t('Guide Complete') : t('Interactive Walkthrough')}
+        {/* Modal Prompt if User clicked Exit / Escape */}
+        {showSkipConfirm ? (
+          <div className="py-2 text-center">
+            <div className="tutorial-celebration-badge mx-auto mb-3 bg-amber-50 text-amber-600 border-amber-200">
+              <AlertTriangle size={24} />
+            </div>
+            <h4 className="text-base font-bold text-slate-900 mb-1">{t('Leave tutorial?')}</h4>
+            <p className="text-xs text-slate-600 mb-4 leading-relaxed">
+              {t(
+                'Your learning progress is automatically saved! You can resume leftover tutorials anytime from the top bar.',
+              )}
             </p>
-          </div>
-        </div>
-
-        {/* Description */}
-        <p className="text-sm text-slate-600 leading-relaxed mb-4 whitespace-pre-line">
-          {t(step.description)}
-        </p>
-
-        {/* Caution Notice (for traps like column names, header rows, date bounds) */}
-        {step.caution && (
-          <div className="tutorial-caution-box mb-4">
-            <AlertTriangle size={16} className="text-amber-600 shrink-0 mt-0.5" />
-            <div className="text-xs leading-relaxed whitespace-pre-line">
-              <strong className="block font-semibold mb-0.5">{t('Pay Special Attention:')}</strong>
-              {t(step.caution)}
+            <div className="flex flex-col sm:flex-row gap-2 justify-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSkipConfirm(false);
+                  onSkipTrack();
+                }}
+                className="tutorial-btn-secondary text-xs justify-center py-2 px-3"
+              >
+                <SkipForward size={13} />
+                {t('Skip just this topic')}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSkipConfirm(false);
+                  onSkipAll();
+                }}
+                className="tutorial-btn-secondary text-xs justify-center py-2 px-3 text-red-600 border-red-200 hover:bg-red-50"
+              >
+                {t('Skip whole tutorial')}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowSkipConfirm(false)}
+                className="tutorial-btn-primary text-xs justify-center py-2 px-4"
+              >
+                {t('Continue learning')}
+              </button>
             </div>
           </div>
-        )}
+        ) : (
+          <>
+            {/* Icon & Title */}
+            <div className="flex items-start gap-3 mb-3">
+              <div className="tutorial-mascot">
+                <StepIcon icon={step.icon} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="text-base font-bold leading-snug text-slate-900">{t(step.title)}</h3>
+                <p className="text-xs text-brand font-medium">
+                  {isLastStep ? t('Topic Complete') : t('Interactive Step-by-Step')}
+                </p>
+              </div>
+            </div>
 
-        {/* Tip Box */}
-        {step.tip && (
-          <div className="tutorial-tip-box mb-5">
-            <Lightbulb size={15} className="text-brand shrink-0 mt-0.5" />
-            <div className="text-xs leading-relaxed whitespace-pre-line">{t(step.tip)}</div>
-          </div>
-        )}
+            {/* Description */}
+            <p className="text-sm text-slate-600 leading-relaxed mb-4 whitespace-pre-line">
+              {t(step.description)}
+            </p>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between gap-2 pt-3 border-t border-slate-200">
-          <button
-            type="button"
-            onClick={onPrev}
-            disabled={stepIndex === 0}
-            className="tutorial-btn-secondary"
-            title={t('Previous (Left Arrow)')}
-          >
-            <ArrowLeft size={15} />
-            <span className="hidden sm:inline">{t('Back')}</span>
-          </button>
-
-          {/* Step dots */}
-          <div className="flex items-center gap-1.5" aria-hidden="true">
-            {Array.from({ length: totalSteps }).map((_, i) => (
-              <span
-                key={i}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === stepIndex ? 'w-5 bg-brand' : 'w-1.5 bg-slate-300'
-                }`}
-              />
-            ))}
-          </div>
-
-          <button
-            type="button"
-            onClick={handleFinishAction}
-            className="tutorial-btn-primary"
-            title={t('Next (Right Arrow or Enter)')}
-          >
-            {isLastStep ? (
-              <>
-                <CheckCircle2 size={16} />
-                <span>{t('Finish Guide')}</span>
-              </>
-            ) : (
-              <>
-                <span>{t('Next')}</span>
-                <ArrowRight size={15} />
-              </>
+            {/* Caution Notice (for traps like column names, header rows, date bounds) */}
+            {step.caution && (
+              <div className="tutorial-caution-box mb-4">
+                <AlertTriangle size={16} className="text-amber-600 shrink-0 mt-0.5" />
+                <div className="text-xs leading-relaxed whitespace-pre-line">
+                  <strong className="block font-semibold mb-0.5">
+                    {t('Pay Special Attention:')}
+                  </strong>
+                  {t(step.caution)}
+                </div>
+              </div>
             )}
-          </button>
-        </div>
+
+            {/* Tip Box */}
+            {step.tip && (
+              <div className="tutorial-tip-box mb-5">
+                <Lightbulb size={15} className="text-brand shrink-0 mt-0.5" />
+                <div className="text-xs leading-relaxed whitespace-pre-line">{t(step.tip)}</div>
+              </div>
+            )}
+
+            {/* Footer */}
+            <div className="flex items-center justify-between gap-2 pt-3 border-t border-slate-200">
+              <button
+                type="button"
+                onClick={onPrev}
+                disabled={stepIndex === 0}
+                className="tutorial-btn-secondary"
+                title={t('Previous (Left Arrow)')}
+              >
+                <ArrowLeft size={15} />
+                <span className="hidden sm:inline">{t('Back')}</span>
+              </button>
+
+              {/* Step dots */}
+              <div className="flex items-center gap-1.5" aria-hidden="true">
+                {Array.from({ length: totalSteps }).map((_, i) => (
+                  <span
+                    key={i}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      i === stepIndex ? 'w-5 bg-brand' : 'w-1.5 bg-slate-300'
+                    }`}
+                  />
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleFinishAction}
+                  className="tutorial-btn-primary"
+                  title={t('Next (Right Arrow or Enter)')}
+                >
+                  {isLastStep ? (
+                    <>
+                      <CheckCircle2 size={16} />
+                      <span>{t('Next Topic')}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>{t('Next')}</span>
+                      <ArrowRight size={15} />
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </>
   );
