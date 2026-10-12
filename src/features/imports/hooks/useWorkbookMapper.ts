@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 export function useWorkbookMapper({
   onReview,
 }: {
-  onReview: (rows: { name: string; email: string }[], file: File) => void;
+  onReview: (rows: { name: string; email: string; rejoins?: number }[], file: File) => void;
 }) {
   const { t } = useTranslation();
   const [book, setBook] = useState<WorkbookData | null>(null);
@@ -20,13 +20,25 @@ export function useWorkbookMapper({
   const rows = book?.worksheets[sheet] || [];
   const headers = rows[header - 1] || [];
   function detect(values: string[]) {
-    setNameColumn(
-      Math.max(
-        0,
-        values.findIndex((value) => /name/i.test(value)),
-      ),
+    const nonHostNameIndex = values.findIndex(
+      (value) => !/host/i.test(value) && /name/i.test(value),
     );
-    setEmailColumn(values.findIndex((value) => /e-?mail/i.test(value)));
+    setNameColumn(
+      nonHostNameIndex >= 0
+        ? nonHostNameIndex
+        : Math.max(
+            0,
+            values.findIndex((value) => /name/i.test(value)),
+          ),
+    );
+    const nonHostEmailIndex = values.findIndex(
+      (value) => !/host/i.test(value) && /e-?mail/i.test(value),
+    );
+    setEmailColumn(
+      nonHostEmailIndex >= 0
+        ? nonHostEmailIndex
+        : values.findIndex((value) => /e-?mail/i.test(value)),
+    );
   }
   const loadWorkbook = async (
     event: import('react').ChangeEvent<HTMLInputElement, HTMLInputElement>,
@@ -62,12 +74,24 @@ export function useWorkbookMapper({
       .map((row) => ({
         name: row[nameColumn]?.trim() || '',
         email: emailColumn >= 0 ? (row[emailColumn] || '').trim().toLowerCase() : '',
-      }));
+      }))
+      .filter((row) => row.name || row.email);
+
     if (!selected.length) {
       setError('No data rows found after this header.');
       return;
     }
-    onReview(selected, file!);
+    const combinedMap = new Map<string, { name: string; email: string; rejoins: number }>();
+    for (const item of selected) {
+      const key = `${item.name.toLowerCase()}__${item.email.toLowerCase()}`;
+      const prior = combinedMap.get(key);
+      if (prior) {
+        prior.rejoins++;
+      } else {
+        combinedMap.set(key, { name: item.name, email: item.email, rejoins: 1 });
+      }
+    }
+    onReview(Array.from(combinedMap.values()), file!);
   };
 
   return {

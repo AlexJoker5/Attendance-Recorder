@@ -35,7 +35,12 @@ export function createImportReviewColumns({
       cell: ({ row }) => (
         <>
           <strong>{row.original.name || t('Unnamed attendee')}</strong>
-          <small>{row.original.email || t('No email')}</small>
+          <small>
+            {row.original.email || t('No email')}
+            {row.original.rejoins && row.original.rejoins > 1
+              ? ` · ${row.original.rejoins} ${t('meeting joins', { defaultValue: 'meeting joins' })}`
+              : ''}
+          </small>
         </>
       ),
     },

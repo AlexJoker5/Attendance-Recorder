@@ -34,7 +34,10 @@ export function useImportReview() {
   function update(id: string, values: Partial<ImportRow>) {
     setRows((prior) => prior.map((row) => (row.id === id ? { ...row, ...values } : row)));
   }
-  const reviewWorkbook = (raw: { name: string; email: string }[], original: File) => {
+  const reviewWorkbook = (
+    raw: { name: string; email: string; rejoins?: number }[],
+    original: File,
+  ) => {
     prepared.current = null;
     setFile(original);
     setError('');
@@ -42,6 +45,7 @@ export function useImportReview() {
       raw.map((row) => {
         const owner = emailOwner(data, row.email);
         const enrolled = owner && students.some((student) => student.id === owner.id);
+        const joinsText = row.rejoins && row.rejoins > 1 ? ` (${row.rejoins} joins)` : '';
         return {
           id: uid(),
           ...row,
@@ -49,12 +53,12 @@ export function useImportReview() {
           saveEmail: false,
           decision: '',
           description: enrolled
-            ? 'Matched by email'
+            ? `Matched by email${joinsText}`
             : owner
-              ? `Email belongs to ${owner.name} (${owner.email}), who is not enrolled in this group. Resolve manually or ignore.`
+              ? `Email belongs to ${owner.name} (${owner.email}), who is not enrolled in this group. Resolve manually or ignore.${joinsText}`
               : row.email
-                ? 'Unknown email — select a student or ignore.'
-                : 'Missing email — select a student or ignore.',
+                ? `Unknown email — select a student or ignore.${joinsText}`
+                : `Missing email — select a student or ignore.${joinsText}`,
         };
       }),
     );

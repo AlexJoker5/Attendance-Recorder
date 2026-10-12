@@ -27,4 +27,5 @@ export interface ImportRow {
   saveEmail: boolean;
   decision: (typeof IMPORT_DECISIONS)[number];
   description: string;
+  rejoins?: number;
 }
