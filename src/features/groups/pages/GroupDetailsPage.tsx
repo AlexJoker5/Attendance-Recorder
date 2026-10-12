@@ -20,9 +20,7 @@ export default function GroupDetailsPage() {
     setDialog,
     data,
     rows,
-    linked,
     dialog,
-    confirmGroupAction,
     error,
   } = model;
   return (
@@ -48,14 +46,26 @@ export default function GroupDetailsPage() {
       />
       {group.archived && <p className="callout warning mb-5">{t('Archived group')}</p>}
       <GroupClasses data={data} group={group} />
-      <GroupEnrollmentPanel rows={rows} />
-      <div className="actions mt-6">
+      <GroupEnrollmentPanel
+        rows={rows}
+        promptUnenrollSingle={model.promptUnenrollSingle}
+        readonly={readonly}
+        setDialog={setDialog}
+      />
+      <div className="actions mt-6 flex gap-3 flex-wrap">
         <Button
-          variant={group.archived ? 'secondary' : 'danger'}
+          variant="secondary"
           disabled={semester.archived}
-          onClick={() => setDialog('remove')}
+          onClick={() => setDialog('archive')}
         >
-          {t(group.archived ? 'Restore group' : linked ? 'Archive group' : 'Delete group')}
+          {t(group.archived ? 'Restore group' : 'Archive group')}
+        </Button>
+        <Button
+          variant="danger"
+          disabled={semester.archived}
+          onClick={() => setDialog('delete')}
+        >
+          {t('Delete group')}
         </Button>
       </div>
       {dialog === 'class' && <ClassForm groupId={group.id} onClose={() => setDialog(null)} />}
@@ -64,11 +74,17 @@ export default function GroupDetailsPage() {
       <GroupLifecycleDialog
         dialog={dialog}
         group={group}
-        linked={linked}
+        classes={model.classes}
+        enrollments={model.enrollments}
+        targetEnrollment={model.targetEnrollment}
         setDialog={setDialog}
-        confirmGroupAction={confirmGroupAction}
+        toggleArchiveGroup={model.toggleArchiveGroup}
+        handleUnenrollSingle={model.handleUnenrollSingle}
+        handleUnenrollAll={model.handleUnenrollAll}
+        handleDeleteGroup={model.handleDeleteGroup}
         error={error}
       />
     </>
   );
 }
+

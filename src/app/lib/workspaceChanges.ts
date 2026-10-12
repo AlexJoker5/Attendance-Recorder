@@ -55,6 +55,7 @@ export function workspaceChanges(previous: AppData, next: AppData): Json {
     imports,
     deleteGroups: removed(previous.groups, next.groups),
     deleteClasses: removed(previous.classes, next.classes),
+    deleteEnrollments: removed(previous.enrollments, next.enrollments),
     events: next.events.filter((event) => !previous.events.some((old) => old.id === event.id)),
   };
   return JSON.parse(JSON.stringify(payload)) as Json;

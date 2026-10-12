@@ -22,6 +22,7 @@ export function useDataTable<T>({ data, columns }: Pick<DataTableProps<T>, 'data
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    autoResetPageIndex: false,
     initialState: { pagination: { pageSize: DEFAULT_TABLE_PAGE_SIZE } },
   });
 }
