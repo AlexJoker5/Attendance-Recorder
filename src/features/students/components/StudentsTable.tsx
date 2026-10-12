@@ -10,6 +10,7 @@ export function StudentsTable({ semester, group, status, rows }: StudentsTablePr
       key={semester.id + group + status}
       data={rows}
       columns={createStudentsColumns({ t })}
+      searchPlaceholder={t('Search by name or email…')}
     />
   );
 }

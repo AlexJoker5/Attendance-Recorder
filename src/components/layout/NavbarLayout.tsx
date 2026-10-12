@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/Button';
-import { LogOut, Menu } from 'lucide-react';
+import { ButtonLink } from '@/components/ui/ButtonLink';
+import { LogOut, Menu, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Breadcrumbs } from './Breadcrumbs';
 import { LanguageSwitcher } from './LanguageSwitcher';
@@ -33,6 +34,10 @@ export function NavbarLayout({
       <div className="actions topbar-controls">
         <SemesterSelector />
         <LanguageSwitcher />
+        <ButtonLink to="/profile" aria-label={t('User profile')}>
+          <User size={16} />
+          <span className="desktop-label">{t('Profile')}</span>
+        </ButtonLink>
         <Button aria-label={t('Sign out')} onClick={() => void onSignOut()}>
           <LogOut size={16} />
           <span className="desktop-label">{t('Sign out')}</span>

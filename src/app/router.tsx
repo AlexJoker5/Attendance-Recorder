@@ -31,4 +31,9 @@ export const appRoutes = [
     component: lazy(() => import('@/features/imports/pages/ImportSessionPage')),
   },
   { path: '/reports', component: lazy(() => import('@/features/reports/pages/ReportsPage')) },
+  { path: '/profile', component: lazy(() => import('@/features/profile/pages/ProfilePage')) },
+  {
+    path: '/reset-password',
+    component: lazy(() => import('@/features/auth/pages/ResetPasswordPage')),
+  },
 ];

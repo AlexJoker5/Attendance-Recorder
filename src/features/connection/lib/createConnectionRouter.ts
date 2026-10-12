@@ -115,7 +115,14 @@ export function createConnectionRouter(options: ConnectionOptions) {
       return withConnectionTimeout(
         async (signal) => {
           const response = await fetch(routed, { signal, cache: 'no-store', redirect: 'error' });
-          if (!response.body) return response;
+          if (
+            !response.body ||
+            response.status === 204 ||
+            response.status === 205 ||
+            response.status === 304
+          ) {
+            return response;
+          }
           // Finish receiving the body before declaring success, so an interrupted JSON
           // response or report download can follow the same connection recovery rules.
           const body = await response.arrayBuffer();

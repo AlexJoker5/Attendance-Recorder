@@ -8,8 +8,10 @@ export type StudentsTableColumnProps = Pick<StudentsModel, 't'>;
 export function createStudentsColumns({ t }: StudentsTableColumnProps): ColumnDef<StudentsRow>[] {
   return [
     {
-      accessorKey: 'name',
+      id: 'name',
+      accessorFn: (row) => `${row.name} ${row.email} ${row.aliases?.join(' ') ?? ''}`,
       header: t('Student'),
+      sortingFn: (rowA, rowB) => rowA.original.name.localeCompare(rowB.original.name),
       cell: ({ row }) => (
         <>
           <strong>{row.original.name}</strong>

@@ -31,8 +31,11 @@ var RPC_NAMES = /* @__PURE__ */ new Set([
   'attendance_original',
 ]);
 function routeMethods(path) {
-  if (path === '/auth/v1/token' || path === '/auth/v1/logout') return ['POST'];
-  if (path === '/auth/v1/user' || path === '/auth/v1/settings') return ['GET'];
+  if (path === '/auth/v1/token' || path === '/auth/v1/logout' || path === '/auth/v1/recover')
+    return ['POST'];
+  if (path === '/auth/v1/settings') return ['GET'];
+  if (path === '/auth/v1/user') return ['GET', 'PUT'];
+  if (path === '/auth/v1/verify') return ['GET', 'POST'];
   if (path.startsWith('/rest/v1/rpc/') && RPC_NAMES.has(path.slice(13))) return ['POST'];
   if (path.startsWith('/storage/v1/object/zoom-originals/')) return ['GET', 'HEAD', 'POST'];
   if (path.startsWith('/storage/v1/object/authenticated/zoom-originals/')) return ['GET', 'HEAD'];
