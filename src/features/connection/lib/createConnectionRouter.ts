@@ -4,7 +4,11 @@ import type {
   ConnectionRoute,
   ConnectionSnapshot,
 } from '../types/connectionTypes';
-import { prefersCloudflare, rememberCloudflare } from './connectionPreference';
+import {
+  clearCloudflarePreference,
+  prefersCloudflare,
+  rememberCloudflare,
+} from './connectionPreference';
 import {
   checkConnection,
   ConnectionNetworkError,
@@ -42,6 +46,12 @@ export function createConnectionRouter(options: ConnectionOptions) {
     update('switching', 'Reconnecting…');
   }
 
+  function useDirect() {
+    route = 'direct';
+    clearCloudflarePreference(options.original);
+    update('switching', 'Connecting directly…');
+  }
+
   function run(operation: () => Promise<void>) {
     if (pending) return pending;
     pending = operation()
@@ -62,14 +72,21 @@ export function createConnectionRouter(options: ConnectionOptions) {
       update('preparing', 'Preparing your connection…');
       if (prefersCloudflare(options.original)) route = 'worker';
       if (!route) route = await detectConnectionRoute(options.development);
-      // Re-check after lookup in case another tab saved a fallback during the request.
       if (prefersCloudflare(options.original)) route = 'worker';
+
       try {
         await checkConnection(route === 'direct' ? options.original : options.proxy, options.key);
       } catch (error) {
-        if (route !== 'direct' || !(error instanceof ConnectionNetworkError)) throw error;
-        useWorker();
-        await checkConnection(options.proxy, options.key);
+        if (!(error instanceof ConnectionNetworkError)) throw error;
+        // Bidirectional resilience: if worker fails (e.g. Cloudflare blocked in Myanmar),
+        // fallback to direct. If direct fails, fallback to worker.
+        if (route === 'direct') {
+          useWorker();
+          await checkConnection(options.proxy, options.key);
+        } else {
+          useDirect();
+          await checkConnection(options.original, options.key);
+        }
       }
       update('ready', '');
     });
@@ -85,10 +102,19 @@ export function createConnectionRouter(options: ConnectionOptions) {
     });
   }
 
+  function switchToDirect() {
+    if (pending) return pending;
+    if (route === 'direct' && snapshot.phase === 'ready') return Promise.resolve();
+    return run(async () => {
+      useDirect();
+      await checkConnection(options.original, options.key);
+      update('ready', '');
+    });
+  }
+
   async function waitUntilReady() {
     if (pending) await pending;
     if (snapshot.phase !== 'ready') throw new Error(snapshot.message);
-    if (route === 'direct' && prefersCloudflare(options.original)) await switchToWorker();
   }
 
   async function routedFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
@@ -141,11 +167,11 @@ export function createConnectionRouter(options: ConnectionOptions) {
       return await send(request);
     } catch (error) {
       if (!(error instanceof ConnectionNetworkError) || request.signal.aborted) throw error;
-      if (attemptedRoute !== 'direct') {
-        fail(error);
-        throw error;
+      if (attemptedRoute === 'direct') {
+        await switchToWorker();
+      } else {
+        await switchToDirect();
       }
-      await switchToWorker();
       if (!retryRequest)
         throw new Error(
           'The connection changed while this request was in progress. Review the latest records before trying again; the request may already have completed.',

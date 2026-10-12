@@ -30,8 +30,8 @@ export async function withConnectionTimeout<T>(
 }
 
 export async function detectConnectionRoute(development: boolean): Promise<ConnectionRoute> {
-  // Plain Vite has no server geolocation headers. Treat local development as unknown.
-  if (development) return 'worker';
+  // Plain Vite has no server geolocation headers. Default to direct connection.
+  if (development) return 'direct';
   try {
     return await withConnectionTimeout(async (signal) => {
       const response = await fetch(COUNTRY_ROUTE_PATH, {
@@ -41,14 +41,14 @@ export async function detectConnectionRoute(development: boolean): Promise<Conne
         redirect: 'error',
         headers: { Accept: 'application/json' },
       });
-      if (!response.ok) return 'worker';
+      if (!response.ok) return 'direct';
       const data: unknown = await response.json();
-      return data && typeof data === 'object' && 'route' in data && data.route === 'direct'
-        ? 'direct'
-        : 'worker';
+      return data && typeof data === 'object' && 'route' in data && data.route === 'worker'
+        ? 'worker'
+        : 'direct';
     }, CONNECTION_CHECK_TIMEOUT_MS);
   } catch {
-    return 'worker';
+    return 'direct';
   }
 }
 

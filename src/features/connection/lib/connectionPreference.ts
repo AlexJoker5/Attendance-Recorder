@@ -19,3 +19,11 @@ export function rememberCloudflare(original: string) {
     // The active router still stays on the Worker if browser storage is unavailable.
   }
 }
+
+export function clearCloudflarePreference(original: string) {
+  try {
+    localStorage.removeItem(preferenceKey(original));
+  } catch {
+    // ignore storage errors
+  }
+}

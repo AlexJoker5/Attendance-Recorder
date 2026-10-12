@@ -1,7 +1,7 @@
-import { COUNTRY_CODES } from '../const/connectionConfig';
 import type { ConnectionRoute } from '../types/connectionTypes';
 
-export function countryRoute(value: string | null): ConnectionRoute {
-  const country = value?.trim().toUpperCase();
-  return country && country !== 'MM' && COUNTRY_CODES.has(country) ? 'direct' : 'worker';
+export function countryRoute(_value: string | null): ConnectionRoute {
+  // Always use direct connection as primary route because Cloudflare Workers (*.workers.dev)
+  // are blocked by telecom ISPs in Myanmar and other regions.
+  return 'direct';
 }
