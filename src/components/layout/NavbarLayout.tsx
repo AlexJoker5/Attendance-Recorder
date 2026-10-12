@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/Button';
 import { ButtonLink } from '@/components/ui/ButtonLink';
-import { LogOut, Menu, User } from 'lucide-react';
+import { useTutorial } from '@/features/tutorial/context/TutorialContext';
+import { Compass, LogOut, Menu, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Breadcrumbs } from './Breadcrumbs';
 import { LanguageSwitcher } from './LanguageSwitcher';
@@ -17,6 +18,7 @@ export function NavbarLayout({
 }) {
   const { t } = useTranslation();
   const crumbs = useBreadcrumbs();
+  const { startTour } = useTutorial();
   return (
     <header className="topbar">
       <div className="actions min-w-0">
@@ -34,7 +36,15 @@ export function NavbarLayout({
       <div className="actions topbar-controls">
         <SemesterSelector />
         <LanguageSwitcher />
-        <ButtonLink to="/profile" aria-label={t('User profile')}>
+        <Button
+          aria-label={t('Tutorial Guide')}
+          title={t('Tutorial Guide')}
+          onClick={startTour}
+        >
+          <Compass size={16} />
+          <span className="desktop-label">{t('Tutorial')}</span>
+        </Button>
+        <ButtonLink to="/profile" aria-label={t('User profile')} data-tour="topbar-profile">
           <User size={16} />
           <span className="desktop-label">{t('Profile')}</span>
         </ButtonLink>

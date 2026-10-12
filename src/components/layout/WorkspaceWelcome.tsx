@@ -1,10 +1,14 @@
+import { Button } from '@/components/ui/Button';
 import { ButtonLink } from '@/components/ui/ButtonLink';
 import { PageHeading } from '@/components/ui/PageHeading';
 import { Panel } from '@/components/ui/Panel';
+import { useTutorial } from '@/features/tutorial/context/TutorialContext';
+import { Compass } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export function WorkspaceWelcome() {
   const { t } = useTranslation();
+  const { startTour } = useTutorial();
   return (
     <>
       <PageHeading
@@ -15,9 +19,15 @@ export function WorkspaceWelcome() {
         <p>
           {t('Create a semester, add its groups and classes, then register and enroll students.')}
         </p>
-        <ButtonLink className="mt-6" to="/semesters" variant="primary">
-          {t('Create your first semester')}
-        </ButtonLink>
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <ButtonLink to="/semesters" variant="primary">
+            {t('Create your first semester')}
+          </ButtonLink>
+          <Button onClick={startTour} variant="secondary">
+            <Compass size={16} />
+            {t('Take Guided Tour ✨')}
+          </Button>
+        </div>
       </Panel>
     </>
   );

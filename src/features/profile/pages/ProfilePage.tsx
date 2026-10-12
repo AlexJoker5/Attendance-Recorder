@@ -1,11 +1,13 @@
 import { useWorkspace } from '@/app/hooks/useWorkspace';
+import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { PageHeading } from '@/components/ui/PageHeading';
 import { Panel } from '@/components/ui/Panel';
 import { RecordForm } from '@/components/ui/RecordForm';
+import { useTutorial } from '@/features/tutorial/context/TutorialContext';
 import { supabase } from '@/lib/supabase';
 import type { User } from '@supabase/supabase-js';
-import { CheckCircle2, KeyRound, Mail, Shield } from 'lucide-react';
+import { CheckCircle2, Compass, KeyRound, Mail, Shield } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -20,6 +22,7 @@ import {
 export default function ProfilePage() {
   const { t } = useTranslation();
   const { notify } = useWorkspace();
+  const { startTour } = useTutorial();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -237,6 +240,22 @@ export default function ProfilePage() {
             </label>
             {passwordError && <ErrorState>{passwordError}</ErrorState>}
           </RecordForm>
+        </div>
+      </Panel>
+
+      {/* Help & Tutorials */}
+      <Panel title={t('Help & Tutorials')}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="grid gap-1">
+            <h3 className="text-base font-bold">{t('Interactive Guided Tour')}</h3>
+            <p className="text-sm text-muted">
+              {t('Replay the step-by-step game quest guide to review key features and shortcuts.')}
+            </p>
+          </div>
+          <Button variant="primary" onClick={startTour} className="shrink-0 self-start sm:self-center">
+            <Compass size={16} />
+            {t('Replay Tutorial Tour')}
+          </Button>
         </div>
       </Panel>
     </div>

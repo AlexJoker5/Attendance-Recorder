@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './tokens.css';
+@import './tutorial.css';
 
 /* Layer shared styles so Tailwind spacing and sizing utilities can override them. */
 @layer components {

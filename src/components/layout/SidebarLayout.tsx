@@ -18,7 +18,7 @@ export function SidebarLayout({ isOpen, onClose }: { isOpen: boolean; onClose: (
         />
       )}
       <aside id="workspace-navigation" className={cn('sidebar', isOpen && 'open')}>
-        <Link to="/" className="brand">
+        <Link to="/" className="brand" data-tour="brand">
           <span className="brandmark">
             <Check size={20} />
           </span>
@@ -32,6 +32,7 @@ export function SidebarLayout({ isOpen, onClose }: { isOpen: boolean; onClose: (
               to={item.path}
               end={item.path === '/'}
               onClick={onClose}
+              data-tour={`nav-${item.path === '/' ? 'overview' : item.path.replace('/', '')}`}
               className={({ isActive }) => cn('nav-item', isActive && 'active')}
             >
               <item.icon size={19} />

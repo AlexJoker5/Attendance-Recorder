@@ -1,3 +1,4 @@
+import { TutorialProvider } from '@/features/tutorial/context/TutorialContext';
 import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MainLayout } from './MainLayout';
@@ -13,7 +14,7 @@ export function AdminLayout({
   const { t } = useTranslation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   return (
-    <>
+    <TutorialProvider>
       <a className="skip-link" href="#main">
         {t('Skip to content')}
       </a>
@@ -24,6 +25,6 @@ export function AdminLayout({
         onSignOut={onSignOut}
       />
       <MainLayout>{children}</MainLayout>
-    </>
+    </TutorialProvider>
   );
 }
