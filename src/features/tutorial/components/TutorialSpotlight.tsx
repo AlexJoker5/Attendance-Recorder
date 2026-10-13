@@ -20,7 +20,8 @@ import {
 } from 'lucide-react';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
+import { TUTORIAL_TRACKS } from '../const/tutorialSteps';
+import { TRACK_ORDER } from '../context/TutorialContext';
 import type { TutorialIconType, TutorialStep, TutorialTrackId } from '../types/tutorialTypes';
 
 interface Props {
@@ -86,10 +87,15 @@ export function TutorialSpotlight({
   onOpenGuideHub,
 }: Props) {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const [targetRect, setTargetRect] = useState<RectState | null>(null);
   const [cardPos, setCardPos] = useState<{ top: number; left: number }>({ top: 100, left: 100 });
   const [showSkipConfirm, setShowSkipConfirm] = useState(false);
+
+  // Topic context
+  const currentTopicIdx = Math.max(0, TRACK_ORDER.indexOf(activeTrackId));
+  const currentTrackInfo = TUTORIAL_TRACKS.find((tr) => tr.id === activeTrackId);
+  const nextTrackId = TRACK_ORDER[currentTopicIdx + 1];
+  const nextTrackInfo = nextTrackId ? TUTORIAL_TRACKS.find((tr) => tr.id === nextTrackId) : null;
 
   // Update target rect & card placement
   useLayoutEffect(() => {
@@ -216,13 +222,6 @@ export function TutorialSpotlight({
   const isLastStep = stepIndex === totalSteps - 1;
   const progressPercent = Math.round(((stepIndex + 1) / totalSteps) * 100);
 
-  const handleFinishAction = () => {
-    onNext();
-    if (isLastStep && activeTrackId === 'overview') {
-      navigate('/semesters');
-    }
-  };
-
   return (
     <>
       {/* SVG Backdrop with Cutout Spotlight */}
@@ -274,10 +273,10 @@ export function TutorialSpotlight({
       >
         {/* Header */}
         <div className="flex items-center justify-between gap-2 mb-3">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="tutorial-badge">
               <Sparkles size={11} />
-              {t(step.questBadge)}
+              {t('Topic')} {currentTopicIdx + 1}/{TRACK_ORDER.length} · {t(step.questBadge)}
             </span>
             <span className="text-xs font-semibold text-slate-500">
               {stepIndex + 1} / {totalSteps}
@@ -314,7 +313,7 @@ export function TutorialSpotlight({
               onClick={() => setShowSkipConfirm(true)}
               className="text-slate-400 hover:text-slate-700 p-1 rounded-lg transition-colors"
               aria-label={t('Exit tutorial')}
-              title={t('Exit / Skip whole tutorial')}
+              title={t('Exit / Skip the tutorial')}
             >
               <X size={17} />
             </button>
@@ -335,7 +334,7 @@ export function TutorialSpotlight({
             <h4 className="text-base font-bold text-slate-900 mb-1">{t('Leave tutorial?')}</h4>
             <p className="text-xs text-slate-600 mb-4 leading-relaxed">
               {t(
-                'Your learning progress is automatically saved! You can resume leftover tutorials anytime from the top bar.',
+                'Your progress is automatically saved! You can resume leftover tutorials anytime from the top bar.',
               )}
             </p>
             <div className="flex flex-col sm:flex-row gap-2 justify-center">
@@ -358,7 +357,7 @@ export function TutorialSpotlight({
                 }}
                 className="tutorial-btn-secondary text-xs justify-center py-2 px-3 text-red-600 border-red-200 hover:bg-red-50"
               >
-                {t('Skip whole tutorial')}
+                {t('Skip the tutorial')}
               </button>
               <button
                 type="button"
@@ -379,7 +378,7 @@ export function TutorialSpotlight({
               <div className="min-w-0 flex-1">
                 <h3 className="text-base font-bold leading-snug text-slate-900">{t(step.title)}</h3>
                 <p className="text-xs text-brand font-medium">
-                  {isLastStep ? t('Topic Complete') : t('Interactive Step-by-Step')}
+                  {currentTrackInfo ? t(currentTrackInfo.title) : t('Interactive Step-by-Step')}
                 </p>
               </div>
             </div>
@@ -438,15 +437,24 @@ export function TutorialSpotlight({
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={handleFinishAction}
+                  onClick={onNext}
                   className="tutorial-btn-primary"
                   title={t('Next (Right Arrow or Enter)')}
                 >
                   {isLastStep ? (
-                    <>
-                      <CheckCircle2 size={16} />
-                      <span>{t('Next Topic')}</span>
-                    </>
+                    nextTrackInfo ? (
+                      <>
+                        <span>
+                          {t('Next Topic')}: {t(nextTrackInfo.title)}
+                        </span>
+                        <ArrowRight size={15} />
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 size={16} />
+                        <span>{t('Finish All Tutorials')}</span>
+                      </>
+                    )
                   ) : (
                     <>
                       <span>{t('Next')}</span>

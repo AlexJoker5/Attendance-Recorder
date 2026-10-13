@@ -51,6 +51,7 @@ export interface TutorialProgress {
   stepIndices: Partial<Record<TutorialTrackId, number>>;
   completedTracks: TutorialTrackId[];
   isAllCompleted: boolean;
+  skipped: boolean;
 }
 
 export interface TutorialContextValue {

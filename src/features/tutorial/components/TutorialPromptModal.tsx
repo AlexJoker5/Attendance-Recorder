@@ -16,6 +16,7 @@ import {
   X,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { TRACK_ORDER } from '../context/TutorialContext';
 import type {
   TutorialIconType,
   TutorialProgress,
@@ -73,14 +74,19 @@ export function TutorialPromptModal({
 
   if (!isOpen) return null;
 
-  // Identify leftover track to resume
-  const resumeTrackId = progress.activeTrackId || activeTrackId || 'overview';
-  const resumeTrackInfo = tracks.find((tr) => tr.id === resumeTrackId) ?? tracks[0];
-  const resumeStepIdx = progress.stepIndices[resumeTrackId] ?? 0;
-  const isResumeTrackCompleted = progress.completedTracks.includes(resumeTrackId);
-  const hasLeftover =
-    !progress.isAllCompleted &&
-    (!isResumeTrackCompleted || progress.completedTracks.length < tracks.length);
+  const totalTracks = tracks.length;
+  const completedCount = progress.completedTracks.length;
+  const overallPercent = Math.round((completedCount / totalTracks) * 100);
+
+  // Identify next uncompleted track
+  let nextTrackId = progress.activeTrackId || 'overview';
+  if (progress.completedTracks.includes(nextTrackId)) {
+    const nextInLine = TRACK_ORDER.find((tr) => !progress.completedTracks.includes(tr));
+    if (nextInLine) nextTrackId = nextInLine;
+  }
+  const nextTrackInfo = tracks.find((tr) => tr.id === nextTrackId) ?? tracks[0];
+  const nextTrackSavedStep = progress.stepIndices[nextTrackId] ?? 0;
+  const hasUncompleted = completedCount < totalTracks;
 
   return (
     <div
@@ -99,7 +105,8 @@ export function TutorialPromptModal({
           <X size={18} />
         </button>
 
-        <div className="flex items-center gap-3 mb-2">
+        {/* Title Header */}
+        <div className="flex items-center gap-3 mb-3">
           <div className="tutorial-track-icon">
             <Compass size={22} />
           </div>
@@ -108,42 +115,85 @@ export function TutorialPromptModal({
               {t('Tutorial & Step-by-Step Guides')}
             </h2>
             <p className="text-slate-500 text-xs">
-              {t('Your learning progress is saved. Pick up where you left off or start any topic.')}
+              {t('Interactive walkthroughs with live system guidance and progress tracking')}
             </p>
           </div>
         </div>
 
-        {/* Leftover Progress Banner */}
-        {hasLeftover && (
-          <div className="my-3 p-3.5 rounded-14 bg-indigo-50 border border-indigo-100 flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <span className="text-[11px] font-semibold text-indigo-700 uppercase tracking-wider block mb-0.5">
-                {t('Continue Leftover Guide')}
+        {/* OVERALL PROGRESS CARD */}
+        <div className="my-3 p-4 rounded-14 bg-slate-50 border border-slate-200">
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-slate-800">
+                {t('Your Learning Progress')}
               </span>
-              <p className="text-sm font-bold text-slate-900 truncate">
-                {t(resumeTrackInfo.title)}
-              </p>
-              <p className="text-xs text-indigo-600">
-                {t('Step')} {resumeStepIdx + 1} {t('of')} {resumeTrackInfo.stepCount}
-              </p>
+              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">
+                {completedCount} / {totalTracks} {t('topics completed')}
+              </span>
             </div>
-            <button
-              type="button"
-              onClick={onResumeTour}
-              className="tutorial-btn-primary text-xs py-2 px-4 shrink-0"
-            >
-              <Play size={13} />
-              {t('Resume')}
-            </button>
+            <span className="text-xs font-bold text-indigo-600">
+              {overallPercent}%
+            </span>
           </div>
-        )}
 
+          {/* Overall Progress Bar */}
+          <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
+            <div
+              className={`h-full transition-all duration-500 ${
+                overallPercent === 100 ? 'bg-emerald-500' : 'bg-indigo-600'
+              }`}
+              style={{ width: `${overallPercent}%` }}
+            />
+          </div>
+
+          {/* Quick Resume Action Banner */}
+          {hasUncompleted ? (
+            <div className="mt-3 pt-3 border-t border-slate-200 flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 block">
+                  {t('Next Recommended Topic')}
+                </span>
+                <p className="text-xs font-bold text-slate-900 truncate">
+                  {t(nextTrackInfo.title)}
+                </p>
+                <p className="text-[11px] text-indigo-600">
+                  {nextTrackSavedStep > 0
+                    ? `${t('Resume at Step')} ${nextTrackSavedStep + 1} ${t('of')} ${nextTrackInfo.stepCount}`
+                    : `${nextTrackInfo.stepCount} ${t('steps remaining')}`}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={onResumeTour}
+                className="tutorial-btn-primary text-xs py-2 px-4 shrink-0 shadow-sm"
+              >
+                <Play size={12} />
+                <span>
+                  {nextTrackSavedStep > 0 ? t('Resume Tutorial') : t('Continue Tutorial')}
+                </span>
+              </button>
+            </div>
+          ) : (
+            <div className="mt-2.5 flex items-center gap-2 text-xs font-medium text-emerald-700">
+              <CheckCircle2 size={15} />
+              <span>{t('Congratulations! You have completed all tutorial topics.')}</span>
+            </div>
+          )}
+        </div>
+
+        {/* TOPIC TRACK LIST WITH DETAILED PROGRESS */}
         <div className="tutorial-track-list">
           {tracks.map((track) => {
             const isCompleted = progress.completedTracks.includes(track.id);
             const savedStep = progress.stepIndices[track.id] ?? 0;
             const hasStarted = !isCompleted && savedStep > 0;
             const isCurrent = track.id === activeTrackId;
+            const trackProgressPercent = isCompleted
+              ? 100
+              : hasStarted
+              ? Math.round(((savedStep + 1) / track.stepCount) * 100)
+              : 0;
 
             return (
               <div
@@ -157,31 +207,46 @@ export function TutorialPromptModal({
                     onSelectTrack(track.id, isCompleted ? 0 : savedStep);
                   }
                 }}
-                className={`tutorial-track-item ${isCurrent ? 'is-active' : ''}`}
+                className={`tutorial-track-item relative overflow-hidden ${
+                  isCurrent ? 'is-active' : ''
+                } ${isCompleted ? 'border-emerald-200 bg-emerald-50/30' : ''}`}
               >
-                <div className="tutorial-track-icon">{renderTrackIcon(track.icon)}</div>
-                <div className="flex-1 min-w-0">
+                <div
+                  className={`tutorial-track-icon ${
+                    isCompleted ? 'bg-emerald-100 text-emerald-700 border-emerald-300' : ''
+                  }`}
+                >
+                  {isCompleted ? <CheckCircle2 size={20} /> : renderTrackIcon(track.icon)}
+                </div>
+
+                <div className="flex-1 min-w-0 pr-2">
                   <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                     <span className="font-semibold text-sm text-slate-900">{t(track.title)}</span>
+
+                    {/* Progress pill on card */}
                     {isCompleted ? (
-                      <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                      <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
                         <CheckCircle2 size={11} />
-                        {t('Completed')}
+                        {t('Completed')} ({track.stepCount}/{track.stepCount})
                       </span>
                     ) : hasStarted ? (
-                      <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
-                        {t('In Progress')} · {savedStep + 1}/{track.stepCount}
+                      <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200">
+                        {t('In Progress')} · {savedStep + 1}/{track.stepCount} ({trackProgressPercent}%)
                       </span>
                     ) : (
                       <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                        {track.stepCount} {t('steps')}
+                        {t('Not Started')} · 0/{track.stepCount}
                       </span>
                     )}
                   </div>
                   <p className="text-slate-500 text-xs line-clamp-1">{t(track.description)}</p>
                 </div>
 
-                <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+                {/* Action buttons */}
+                <div
+                  className="flex items-center gap-1.5 shrink-0"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   {hasStarted && (
                     <button
                       type="button"
@@ -194,25 +259,56 @@ export function TutorialPromptModal({
                   )}
                   <button
                     type="button"
-                    className="tutorial-btn-secondary text-xs py-1.5 px-3 flex-shrink-0"
+                    className={`text-xs py-1.5 px-3 flex-shrink-0 ${
+                      isCompleted
+                        ? 'tutorial-btn-secondary text-slate-600'
+                        : hasStarted
+                        ? 'tutorial-btn-primary'
+                        : 'tutorial-btn-secondary'
+                    }`}
                     onClick={() => onSelectTrack(track.id, isCompleted ? 0 : savedStep)}
                   >
-                    {isCompleted ? t('Review') : hasStarted ? t('Resume') : t('Start')}
-                    <ArrowRight size={13} />
+                    {isCompleted ? (
+                      <>
+                        <span>{t('Review')}</span>
+                        <RotateCcw size={12} />
+                      </>
+                    ) : hasStarted ? (
+                      <>
+                        <span>{t('Resume')}</span>
+                        <Play size={12} />
+                      </>
+                    ) : (
+                      <>
+                        <span>{t('Start')}</span>
+                        <ArrowRight size={12} />
+                      </>
+                    )}
                   </button>
+                </div>
+
+                {/* Mini Progress Bar Line on Card Bottom */}
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-slate-100">
+                  <div
+                    className={`h-full transition-all duration-300 ${
+                      isCompleted ? 'bg-emerald-500' : 'bg-indigo-600'
+                    }`}
+                    style={{ width: `${trackProgressPercent}%` }}
+                  />
                 </div>
               </div>
             );
           })}
         </div>
 
+        {/* FOOTER */}
         <div className="flex items-center justify-between pt-3 border-t border-slate-100 gap-3">
           <button
             type="button"
             onClick={onSkipAll}
             className="text-xs text-slate-500 hover:text-red-600 font-medium transition-colors"
           >
-            {t('Skip whole tutorial')}
+            {t('Skip the tutorial')}
           </button>
           <button
             type="button"
