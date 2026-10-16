@@ -11,17 +11,20 @@ export function DataTable<T>({
   columns,
   label = 'Search table',
   searchPlaceholder = 'Search table',
+  showCreatedDate = true,
   getCreatedAt,
   createdDateEmptyLabel,
   createdDateDescription,
 }: DataTableProps<T>) {
   const { t, i18n } = useTranslation();
-  const tableColumns = withCreatedDateColumn(
-    columns,
-    { getCreatedAt, createdDateEmptyLabel, createdDateDescription },
-    t,
-    i18n.language,
-  );
+  const tableColumns = showCreatedDate
+    ? withCreatedDateColumn(
+        columns,
+        { getCreatedAt, createdDateEmptyLabel, createdDateDescription },
+        t,
+        i18n.language,
+      )
+    : columns;
   const table = useDataTable({ data, columns: tableColumns });
   return (
     <div className="table-shell">

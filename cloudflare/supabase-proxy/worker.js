@@ -29,6 +29,8 @@ var RPC_NAMES = /* @__PURE__ */ new Set([
   'attendance_workspace',
   'attendance_commit',
   'attendance_original',
+  'attendance_class_share',
+  'attendance_public_class',
 ]);
 function routeMethods(path) {
   if (path === '/auth/v1/token' || path === '/auth/v1/logout' || path === '/auth/v1/recover')

@@ -2,11 +2,15 @@ import { STORAGE_KEYS } from '@/app/const/storageKeys';
 import en from '@/locales/en/common.json';
 import myAdditions from '@/locales/my/additions.json';
 import my from '@/locales/my/common.json';
+import mySharing from '@/locales/my/sharing.json';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 void i18n.use(initReactI18next).init({
-  resources: { en: { translation: en }, my: { translation: { ...my, ...myAdditions } } },
+  resources: {
+    en: { translation: en },
+    my: { translation: { ...my, ...myAdditions, ...mySharing } },
+  },
   lng: localStorage.getItem(STORAGE_KEYS.language) || 'en',
   fallbackLng: 'en',
   keySeparator: false,

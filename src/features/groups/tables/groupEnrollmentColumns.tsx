@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/Button';
 import { ButtonLink } from '@/components/ui/ButtonLink';
+import { studentSearchText } from '@/features/students/lib/studentSearchText';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { GroupDetailsModel } from '../hooks/useGroupDetails';
 
@@ -15,7 +16,13 @@ export function createGroupEnrollmentColumns({
   readonly,
 }: GroupEnrollmentTableColumnProps): ColumnDef<GroupEnrollmentRow>[] {
   return [
-    { id: 'name', accessorFn: (row) => row.student.name, header: t('Student') },
+    {
+      id: 'name',
+      accessorFn: (row) => studentSearchText(row.student),
+      header: t('Student'),
+      sortingFn: (a, b) => a.original.student.name.localeCompare(b.original.student.name),
+      cell: ({ row }) => row.original.student.name,
+    },
     { id: 'email', accessorFn: (row) => row.student.email, header: t('Email') },
     { accessorKey: 'joined', header: t('Enrollment date') },
     { accessorKey: 'status', header: t('Status') },
@@ -37,4 +44,3 @@ export function createGroupEnrollmentColumns({
     },
   ];
 }
-

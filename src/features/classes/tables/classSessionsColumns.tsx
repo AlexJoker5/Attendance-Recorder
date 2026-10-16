@@ -53,7 +53,13 @@ export function createClassSessionsColumns({
       id: 'review',
       accessorFn: (row) => (row.removed ? 'Removed' : row.finalized ? 'Finalized' : 'Draft'),
       header: t('Review status'),
-      cell: ({ getValue }) => t(String(getValue())),
+      cell: ({ row, getValue }) => (
+        <Badge
+          tone={row.original.removed ? 'neutral' : row.original.finalized ? 'success' : 'warning'}
+        >
+          {t(String(getValue()))}
+        </Badge>
+      ),
     },
     {
       id: 'actions',

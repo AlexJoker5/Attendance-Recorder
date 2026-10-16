@@ -4,6 +4,7 @@ export interface DataTableProps<T> {
   columns: ColumnDef<T>[];
   label?: string;
   searchPlaceholder?: string;
+  showCreatedDate?: boolean;
   getCreatedAt?: (row: T) => string | undefined;
   createdDateEmptyLabel?: string;
   createdDateDescription?: string;

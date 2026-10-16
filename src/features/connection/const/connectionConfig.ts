@@ -22,4 +22,5 @@ export const READ_ONLY_RPC_PATHS = new Set([
   '/rest/v1/rpc/is_attendance_admin',
   '/rest/v1/rpc/attendance_workspace',
   '/rest/v1/rpc/attendance_original',
+  '/rest/v1/rpc/attendance_public_class',
 ]);

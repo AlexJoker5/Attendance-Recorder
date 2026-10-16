@@ -30,6 +30,8 @@ export const RPC_NAMES = new Set([
   'attendance_workspace',
   'attendance_commit',
   'attendance_original',
+  'attendance_class_share',
+  'attendance_public_class',
 ]);
 
 export function routeMethods(path: string): string[] {

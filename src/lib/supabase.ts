@@ -11,6 +11,7 @@ const config = supabaseConfig(
 );
 export const localMode = import.meta.env.DEV && import.meta.env.VITE_DATA_MODE !== 'supabase';
 export const supabaseConfigurationError = config.error;
+export const publicConnectionConfig = config;
 export const connectionRouter =
   !localMode && config.url && config.proxy && config.key
     ? createConnectionRouter({
@@ -23,6 +24,11 @@ export const connectionRouter =
 
 export let supabase: SupabaseClient<Database> | null = null;
 let initialization: Promise<void> | null = null;
+
+// Public pages initialize transport without constructing Auth or refreshing an owner session.
+export function initializeSupabaseTransport() {
+  return connectionRouter?.initialize() ?? Promise.resolve();
+}
 
 export function initializeSupabaseConnection() {
   if (!connectionRouter) return Promise.resolve();

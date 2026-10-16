@@ -2,6 +2,7 @@ import { APP_TIME_ZONE } from '@/app/const/appConfig';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { PageHeading } from '@/components/ui/PageHeading';
+import { ClassShareButton } from '@/features/sharing/components/ClassShareButton';
 import { Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { AddSessionDialog } from '../components/AddSessionDialog';
@@ -57,10 +58,16 @@ export default function ClassDetailsPage() {
         description={`${group.name} · ${t(weekdays[cls.weekday])} · ${cls.startTime}–${cls.endTime} · ${APP_TIME_ZONE}`}
         actions={
           <>
+            <ClassShareButton classId={cls.id} />
             <Button disabled={readonly} onClick={() => setDialog('edit')}>
               {t('Edit class')}
             </Button>
-            <Button variant="primary" disabled={readonly} data-tour="class-add-session-btn" onClick={() => setDialog('session')}>
+            <Button
+              variant="primary"
+              disabled={readonly}
+              data-tour="class-add-session-btn"
+              onClick={() => setDialog('session')}
+            >
               <Plus size={16} />
               {t('Add session')}
             </Button>

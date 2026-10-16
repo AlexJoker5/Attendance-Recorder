@@ -45,3 +45,7 @@ The maintained TypeScript source is in `cloudflare/supabase-proxy/src`; the read
 ## Name-only Zoom attendance imports
 
 Apply `supabase/009_zoom_name_matching.sql` after the current 008 workspace migration. The importer now matches registered and administrator-approved Zoom names, suggests close names for review, asks before saving names in parentheses, and ignores waiting-room, host/co-host, and generic device rows. Contact emails are not used for attendance matching. See [Name-only Zoom imports](docs/13-zoom-name-matching.md) before deployment.
+
+## Public class links
+
+Use **Share class** on a class page to create, copy, replace, or revoke a read-only link. Anyone with the link can view that class's students and finalized session attendance, including remarks. Contact details, private notes, Zoom reports, and audit history are excluded by a separate database endpoint. Apply the local `supabase/010_public_class_sharing.sql`, update the generated Cloudflare Worker, and deploy the frontend before sharing real links. See [Public class sharing setup](docs/14-public-class-sharing.md).

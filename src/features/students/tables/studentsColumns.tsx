@@ -2,6 +2,7 @@ import { Badge } from '@/components/ui/Badge';
 import { ButtonLink } from '@/components/ui/ButtonLink';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { StudentsModel } from '../hooks/useStudentsPage';
+import { studentSearchText } from '../lib/studentSearchText';
 type StudentsRow = StudentsModel['rows'][number];
 export type StudentsTableColumnProps = Pick<StudentsModel, 't'>;
 
@@ -9,8 +10,7 @@ export function createStudentsColumns({ t }: StudentsTableColumnProps): ColumnDe
   return [
     {
       id: 'name',
-      accessorFn: (row) =>
-        `${row.name} ${row.email} ${row.aliases?.join(' ') ?? ''} ${row.zoomNames?.join(' ') ?? ''}`,
+      accessorFn: studentSearchText,
       header: t('Student'),
       sortingFn: (rowA, rowB) => rowA.original.name.localeCompare(rowB.original.name),
       cell: ({ row }) => (

@@ -133,7 +133,7 @@ Open http://127.0.0.1:5179. The Worker allows that exact origin. `.env` is ignor
 | Proxy URL setup message                | Use an HTTPS origin only. Remove `/health`, other paths, query strings and surrounding quotes.                                                  |
 | 502 from Worker                        | Check the original Supabase URL, project status, and upstream reachability. The Worker could not complete the upstream request.                 |
 | Supabase 401/403 response              | Check the publishable key, owner account, session and existing owner/RLS configuration. The proxy does not grant access.                        |
-| API route is not supported             | This Worker supports the current app's password Auth routes, four RPCs and original-report bucket only. New features may need a route added.    |
+| API route is not supported             | This Worker supports the current app's password Auth routes, six RPCs (including public sharing), and original-report bucket only. New features may need a route added.    |
 | Request-header preflight denied        | Compare the requested header with `FORWARDED_HEADERS` before allowing it; SDK upgrades can add headers.                                         |
 | Cloudflare 1027 / 1102                 | Check daily request usage / CPU limits in Cloudflare.                                                                                           |
 

@@ -44,7 +44,7 @@ export default {
       return jsonResponse({ message: 'This request method is not allowed.' }, 405, origin);
     if (!request.headers.get('apikey'))
       return jsonResponse({ message: 'A Supabase publishable API key is required.' }, 401, origin);
-    // Supabase Auth, owner-checked RPCs and Storage RLS still authorize every request.
+    // Supabase enforces Auth/owner checks, scoped public share tokens, and Storage RLS.
     return forwardRequest(request, upstream, origin);
   },
 };

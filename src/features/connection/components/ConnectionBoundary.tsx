@@ -8,7 +8,13 @@ const idleSnapshot: ConnectionSnapshot = { phase: 'ready', route: null, message:
 const idleSubscribe = () => () => {};
 const idleGetSnapshot = () => idleSnapshot;
 
-export function ConnectionBoundary({ children }: { children: ReactNode }) {
+export function ConnectionBoundary({
+  children,
+  initialize = initializeSupabaseConnection,
+}: {
+  children: ReactNode;
+  initialize?: () => Promise<unknown>;
+}) {
   const snapshot = useSyncExternalStore(
     connectionRouter?.subscribe ?? idleSubscribe,
     connectionRouter?.getSnapshot ?? idleGetSnapshot,
@@ -17,7 +23,7 @@ export function ConnectionBoundary({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let disposed = false;
-    void initializeSupabaseConnection()
+    void initialize()
       .then(() => {
         if (!disposed) setInitialized(true);
       })
@@ -27,10 +33,10 @@ export function ConnectionBoundary({ children }: { children: ReactNode }) {
     return () => {
       disposed = true;
     };
-  }, []);
+  }, [initialize]);
 
   function retry() {
-    void initializeSupabaseConnection()
+    void initialize()
       .then(() => {
         setInitialized(true);
         // Resume failed reads after recovery. Mutations are never automatically replayed.
