@@ -1,12 +1,16 @@
 import { readWorkbook } from '@/utils/readWorkbook';
 import type { WorkbookData } from '@/utils/types/spreadsheetTypes';
+import { detectZoomReportColumns, mapZoomReport } from '@/utils/mapZoomReport';
+import type { ZoomReportRow } from '../types/importTypes';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export function useWorkbookMapper({
   onReview,
+  purpose = 'students',
 }: {
-  onReview: (rows: { name: string; email: string; rejoins?: number }[], file: File) => void;
+  onReview: (rows: ZoomReportRow[], file: File) => void;
+  purpose?: 'students' | 'attendance';
 }) {
   const { t } = useTranslation();
   const [book, setBook] = useState<WorkbookData | null>(null);
@@ -15,11 +19,19 @@ export function useWorkbookMapper({
   const [header, setHeader] = useState(1);
   const [nameColumn, setNameColumn] = useState(0);
   const [emailColumn, setEmailColumn] = useState(1);
+  const [waitingRoomColumn, setWaitingRoomColumn] = useState(-1);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const rows = book?.worksheets[sheet] || [];
   const headers = rows[header - 1] || [];
   function detect(values: string[]) {
+    if (purpose === 'attendance') {
+      const columns = detectZoomReportColumns(values);
+      setNameColumn(columns.nameColumn);
+      setEmailColumn(columns.emailColumn);
+      setWaitingRoomColumn(columns.waitingRoomColumn);
+      return;
+    }
     const nonHostNameIndex = values.findIndex(
       (value) => !/host/i.test(value) && /name/i.test(value),
     );
@@ -64,8 +76,32 @@ export function useWorkbookMapper({
   };
   const reviewMappedRows = () => {
     setError('');
-    if (nameColumn === emailColumn) {
+    if (purpose === 'students' && nameColumn === emailColumn) {
       setError('Name and email must use different columns.');
+      return;
+    }
+    if (!Number.isInteger(header) || header < 1 || header >= rows.length || !headers[nameColumn]) {
+      setError('Choose a valid header row and name column.');
+      return;
+    }
+    if (purpose === 'attendance') {
+      if (waitingRoomColumn === nameColumn) {
+        setError('Name and waiting room must use different columns.');
+        return;
+      }
+      const selected = mapZoomReport(
+        rows.slice(header),
+        headers,
+        nameColumn,
+        -1,
+        waitingRoomColumn,
+        header + 1,
+      );
+      if (!selected.length) {
+        setError('No data rows found after this header.');
+        return;
+      }
+      onReview(selected, file!);
       return;
     }
     const selected = rows
@@ -110,6 +146,9 @@ export function useWorkbookMapper({
     headers,
     emailColumn,
     setEmailColumn,
+    waitingRoomColumn,
+    setWaitingRoomColumn,
+    purpose,
     reviewMappedRows,
     error,
   };

@@ -17,7 +17,7 @@ export function AdditionalEmailDialog({
   return (
     <Dialog title={t('Add additional email')} onClose={onClose} isFooter={false}>
       <p className="muted mb-5">
-        {t('Approve this email for future Zoom imports. The primary email stays unchanged.')}
+        {t('Save an additional contact email. Attendance imports match names only.')}
       </p>
       <RecordForm
         schema={additionalEmailSchema}

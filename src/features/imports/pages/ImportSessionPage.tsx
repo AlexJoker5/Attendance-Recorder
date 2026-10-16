@@ -13,6 +13,7 @@ export default function ImportSessionPage() {
     session,
     semester,
     readonly,
+    namesReady,
     reviewWorkbook,
     students,
     rows,
@@ -37,14 +38,23 @@ export default function ImportSessionPage() {
         </strong>
         <br />
         {t(
-          'Email is the only automatic match. Missing or unknown emails require manual selection or Ignore.',
+          'Attendance matches registered and approved Zoom names only. Review close names and approve additional names before applying. Email is not used.',
         )}
       </p>
-      <ImportWorkbookPanel
-        readonly={readonly}
-        reviewWorkbook={reviewWorkbook}
-        students={students}
-      />
+      {!namesReady && (
+        <p className="callout warning mb-6">
+          {t(
+            'Install supabase/009_zoom_name_matching.sql before importing attendance or saving Zoom names.',
+          )}
+        </p>
+      )}
+      {namesReady && (
+        <ImportWorkbookPanel
+          readonly={readonly}
+          reviewWorkbook={reviewWorkbook}
+          students={students}
+        />
+      )}
       <ImportReviewPanel
         rows={rows}
         file={file}
@@ -55,7 +65,7 @@ export default function ImportSessionPage() {
         update={update}
         students={students}
         error={error}
-        readonly={readonly}
+        readonly={readonly || !namesReady}
         busy={busy}
         applyReviewedImport={applyReviewedImport}
       />

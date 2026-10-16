@@ -10,6 +10,7 @@ export interface ImportChange {
 export interface ImportRecord {
   original?: OriginalFileMetadata;
   rows?: ImportRow[];
+  matchingRule?: string;
   id: string;
   sessionId: string;
   filename: string;
@@ -19,12 +20,28 @@ export interface ImportRecord {
   undoneAt?: string;
   summary?: { restored: number; preserved: number };
 }
-export interface ImportRow {
+export interface ZoomReportRow {
+  name: string;
+  email: string;
+  waitingRoom?: boolean;
+  role?: string;
+  hostName?: string;
+  sourceRow?: number;
+  rejoins?: number;
+}
+export interface ImportRow extends ZoomReportRow {
   id: string;
   name: string;
   email: string;
   studentId: string;
-  saveEmail: boolean;
+  // Kept optional for reading older local import history; never used for new matches.
+  saveEmail?: boolean;
+  displayName?: string;
+  originalName?: string;
+  namesToSave?: string[];
+  ignoreReason?: string;
+  matchMethod?: 'registered_name' | 'zoom_name' | 'manual';
+  suggestions?: string[];
   decision: (typeof IMPORT_DECISIONS)[number];
   description: string;
   rejoins?: number;

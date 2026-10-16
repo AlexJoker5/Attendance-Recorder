@@ -1,7 +1,7 @@
 import { useAppData } from '@/app/hooks/useAppData';
 import { useWorkspace } from '@/app/hooks/useWorkspace';
 import { roster } from '@/features/attendance/lib/attendanceSelectors';
-import { emailOwner } from '@/features/students/lib/studentEmails';
+import { normalizeZoomName, zoomNameOwners } from '@/features/students/lib/studentZoomNames';
 import { uid } from '@/utils/uid';
 import { useRef, useState } from 'react';
 import type { OriginalFileMetadata } from '../types/originalFileTypes';
@@ -9,7 +9,10 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import { storeOriginal } from '../api/originalFiles';
 import { applyImport } from '../lib/importRules';
-import type { ImportRow } from '../types/importTypes';
+import type { ImportRow, ZoomReportRow } from '../types/importTypes';
+import { reviewZoomRows } from '../lib/reviewZoomRows';
+import { localMode } from '@/lib/supabase';
+import { ZOOM_MATCHING_RULE } from '../const/zoomNameRules';
 export function useImportReview() {
   const { sessionId } = useParams();
   const { data, change } = useAppData();
@@ -28,46 +31,63 @@ export function useImportReview() {
   const group = data.groups.find((item) => item.id === cls.groupId)!;
   const semester = data.semesters.find((item) => item.id === group.semesterId)!;
   const readonly = semester.archived || group.archived || cls.archived || session.removed;
+  const namesReady = localMode || data.zoomMatchingVersion === 1;
   const students = roster(data, cls.id).map((enrollment) =>
     data.students.find((item) => item.id === enrollment.studentId)!,
   );
   function update(id: string, values: Partial<ImportRow>) {
-    setRows((prior) => prior.map((row) => (row.id === id ? { ...row, ...values } : row)));
+    setRows((prior) => {
+      const target = prior.find((row) => row.id === id);
+      if (!target) return prior;
+      return prior.map((row) => {
+        if (row.ignoreReason) return row;
+        const sameName = normalizeZoomName(row.name) === normalizeZoomName(target.name);
+        if (values.studentId !== undefined && sameName) {
+          const student = students.find((item) => item.id === values.studentId);
+          const name = row.displayName || row.name;
+          const canSave =
+            student &&
+            !zoomNameOwners([student], name).length &&
+            !zoomNameOwners(data!.students, name, student.id).length;
+          return {
+            ...row,
+            ...values,
+            namesToSave: canSave ? [name] : [],
+            decision: '',
+            matchMethod: 'manual',
+            description:
+              values.studentId === 'ignore'
+                ? 'Ignored by administrator during review.'
+                : !values.studentId
+                  ? 'Unrecognized Zoom name. Review suggestions or choose a student.'
+                  : 'Manually confirmed name. Selected Zoom names will be remembered when attendance is applied.',
+          };
+        }
+        // Apply a decision once for repeated rows of the same student, avoiding
+        // incompatible keep/replace choices after reconnects and renamed joins.
+        if (values.decision !== undefined && row.studentId === target.studentId)
+          return { ...row, decision: values.decision };
+        if (values.namesToSave && sameName) return { ...row, namesToSave: values.namesToSave };
+        return row.id === id ? { ...row, ...values } : row;
+      });
+    });
   }
-  const reviewWorkbook = (
-    raw: { name: string; email: string; rejoins?: number }[],
-    original: File,
-  ) => {
+  const reviewWorkbook = (raw: ZoomReportRow[], original: File) => {
     prepared.current = null;
     setFile(original);
     setError('');
-    setRows(
-      raw.map((row) => {
-        const owner = emailOwner(data, row.email);
-        const enrolled = owner && students.some((student) => student.id === owner.id);
-        const joinsText = row.rejoins && row.rejoins > 1 ? ` (${row.rejoins} joins)` : '';
-        return {
-          id: uid(),
-          ...row,
-          studentId: enrolled ? owner.id : '',
-          saveEmail: false,
-          decision: '',
-          description: enrolled
-            ? `Matched by email${joinsText}`
-            : owner
-              ? `Email belongs to ${owner.name} (${owner.email}), who is not enrolled in this group. Resolve manually or ignore.${joinsText}`
-              : row.email
-                ? `Unknown email — select a student or ignore.${joinsText}`
-                : `Missing email — select a student or ignore.${joinsText}`,
-        };
-      }),
-    );
+    setRows(reviewZoomRows(raw, students));
+    setFilter('all');
   };
   const applyReviewedImport = async () => {
     setBusy(true);
     setError('');
     try {
       if (!file) throw new Error('Choose a report first.');
+      if (!namesReady)
+        throw new Error(
+          'Install supabase/009_zoom_name_matching.sql before importing attendance or saving Zoom names.',
+        );
       if (!prepared.current || prepared.current.file !== file)
         prepared.current = { id: uid(), file };
       const upload = prepared.current;
@@ -80,6 +100,7 @@ export function useImportReview() {
         const log = next.imports.find((item) => item.id === id)!;
         log.original = upload.original;
         log.rows = structuredClone(rows);
+        log.matchingRule = ZOOM_MATCHING_RULE;
         next.classes.find((item) => item.id === cls.id)!.completed = false;
       });
       notify(t('Attendance imported. Review the session before finalizing.'));
@@ -98,6 +119,7 @@ export function useImportReview() {
     session,
     semester,
     readonly,
+    namesReady,
     reviewWorkbook,
     students,
     rows,

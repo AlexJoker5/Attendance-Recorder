@@ -33,7 +33,7 @@ export function ImportDetailsDialog({
         <p className="mb-5">{log.filename}</p>
         <p className="callout mb-5">
           {t(
-            'Undo restores only cells still owned by this import. Later edits and imports are preserved. Verified emails remain saved. Restored attendance returns to Draft.',
+            'Undo restores only cells still owned by this import. Later edits and imports are preserved. Approved Zoom names remain saved until you remove them in student details. Restored attendance returns to Draft.',
           )}
         </p>
         <ImportChangesTable plan={plan} log={log} />

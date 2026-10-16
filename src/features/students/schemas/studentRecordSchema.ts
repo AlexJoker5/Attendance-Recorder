@@ -8,4 +8,5 @@ export const studentRecordSchema = z.object({
   phone: z.string(),
   notes: z.string(),
   aliases: z.array(z.string()),
+  zoomNames: z.array(z.string()).default([]),
 });

@@ -6,4 +6,5 @@ export interface Student {
   phone: string;
   notes: string;
   aliases: string[];
+  zoomNames?: string[];
 }

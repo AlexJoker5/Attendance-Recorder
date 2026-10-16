@@ -22,6 +22,9 @@ export function WorkbookMapper(props: Parameters<typeof useWorkbookMapper>[0]) {
     headers,
     emailColumn,
     setEmailColumn,
+    waitingRoomColumn,
+    setWaitingRoomColumn,
+    purpose,
     reviewMappedRows,
     error,
   } = model;
@@ -47,6 +50,9 @@ export function WorkbookMapper(props: Parameters<typeof useWorkbookMapper>[0]) {
             headers={headers}
             emailColumn={emailColumn}
             setEmailColumn={setEmailColumn}
+            waitingRoomColumn={waitingRoomColumn}
+            setWaitingRoomColumn={setWaitingRoomColumn}
+            purpose={purpose}
           />
           <Button variant="primary" data-tour="import-review-btn" onClick={reviewMappedRows}>
             {t('Review matches')}

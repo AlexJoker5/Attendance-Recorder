@@ -42,6 +42,19 @@ export function ImportReviewPanel({
         <p className="muted mb-5">
           {file?.name} · {rows.length} {t('attendee rows')}
         </p>
+        <p className="callout mb-5">
+          {t('Matched students')}:{' '}
+          {
+            new Set(
+              rows
+                .filter((row) => row.studentId && row.studentId !== 'ignore')
+                .map((row) => row.studentId),
+            ).size
+          }{' '}
+          · {t('Needs review')}: {rows.filter((row) => !row.studentId).length} · {t('Ignored')}:{' '}
+          {rows.filter((row) => row.studentId === 'ignore').length}.{' '}
+          {t('Repeated joins count once per student. Ignored rows give no attendance credit.')}
+        </p>
         <div className="filter-bar">
           <Select
             aria-label={t('Match review')}
@@ -60,7 +73,7 @@ export function ImportReviewPanel({
         />
         {error && (
           <p className="error mt-4" role="alert">
-            {error}
+            {t(error)}
           </p>
         )}
         <div className="actions mt-6">

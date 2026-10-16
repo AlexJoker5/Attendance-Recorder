@@ -23,7 +23,7 @@ Open http://127.0.0.1:5179 and choose **Open local preview**. All people shown a
 - Individual student registration/editing, reusable profiles, one group per semester, enrollment in every group class, student-list import with worksheet/header/column mapping.
 - Student details, additional email removal, withdrawal/transfer/reversal with reasons and history. No second group enrollment is created by transfer.
 - Session attendance editing, remarks, draft saves and finalization of the full roster. Earlier regular sessions receive pre-enrollment credit when applicable.
-- CSV/XLSX attendance import with mapping, email-only automatic matching, manual matching, ignoring rows, additional-email approval, conflict descriptions, duplicate-row merging and keep/replace decisions.
+- CSV/XLSX attendance import with name-only matching, suggestions requiring review, persistent approved Zoom names, explicit original-name approval, automatic ignore reasons, and keep/replace decisions. Waiting-room and in-meeting rows remain separate; attendance counts once per resolved student.
 - Import history, impact preview, undo that preserves later changes, and local original-file download.
 - Live dashboard statistics, per-class results and explanations, session/result/matrix CSV/XLSX exports.
 - Shared sorting/search/filter/pagination, clickable breadcrumbs, responsive layouts, English/Myanmar resources and shared HTML design tokens.
@@ -62,7 +62,7 @@ The repository initially caches a consistent owner workspace; table pagination i
 
 TypeScript, lint, formatting, production-build checks, and a local PostgreSQL walkthrough validate implementation behavior without adding a test suite or new test cases. The walkthrough uses platform stand-ins; actual hosted Storage and network behavior remain for manual review. No hosted SQL or settings were changed by the coding agent.
 
-The actual Zoom sample is still needed to verify columns, worksheets, dates, and repeated-join formats. The generic CSV/XLSX parser accepts files up to 10 MiB and up to 5,000 worksheet rows. Some dynamic validation/conflict messages remain English; final Myanmar wording needs owner review.
+The supplied October 14, 2026 Zoom sample was used to verify the name/waiting-room columns, renamed names in parentheses, host/co-host exclusions, and repeated joins locally. See [Name-only Zoom imports](13-zoom-name-matching.md) for migration and manual hosted verification. The generic CSV/XLSX parser accepts files up to 10 MiB and up to 5,000 worksheet rows. Some dynamic validation/conflict messages remain English; final Myanmar wording needs owner review.
 
 Root vercel.json supports SPA refreshes. Deployment remains pending and no paid infrastructure was introduced.
 

@@ -9,6 +9,7 @@ import { z } from 'zod';
 
 export const workspaceSchema = z.object({
   version: z.literal(1),
+  zoomMatchingVersion: z.number().optional(),
   revision: z.number().int().nonnegative(),
   semesters: z.array(semesterRecordSchema),
   groups: z.array(groupRecordSchema),

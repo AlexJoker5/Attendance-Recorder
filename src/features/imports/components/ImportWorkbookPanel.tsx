@@ -20,18 +20,19 @@ export function ImportWorkbookPanel({
     <p>{t('Restore the semester, group, class, and session before importing.')}</p>
   ) : (
     <Panel>
-      <WorkbookMapper onReview={reviewWorkbook} />
+      <WorkbookMapper purpose="attendance" onReview={reviewWorkbook} />
       <Button
         className="mt-5"
         onClick={() =>
           void exportSheet(
             'sample-attendance-report',
             [
-              ['Name (original name)', 'Email'],
-              [students[0]?.name || 'Example Student', students[0]?.email || 'example@example.com'],
-              ['Different Zoom name', 'unknown@example.com'],
-              ['Guest without email', ''],
-              [students[0]?.name || 'Example Student', students[0]?.email || 'example@example.com'],
+              ['Name (original name)', 'In waiting room'],
+              [students[0]?.name || 'Example Student', 'Yes'],
+              [(students[0]?.name || 'Example Student') + ' (My Zoom nickname)', 'No'],
+              ['Different Zoom name', 'No'],
+              ['iPhone', 'No'],
+              ['Teacher (Host)', 'No'],
             ],
             'csv',
           )

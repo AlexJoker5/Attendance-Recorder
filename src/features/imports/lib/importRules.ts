@@ -3,7 +3,10 @@ import type { AppData } from '@/app/types/appData';
 import { blankCell } from '@/features/attendance/lib/attendanceCell';
 import { roster } from '@/features/attendance/lib/attendanceSelectors';
 import type { AttendanceCell } from '@/features/attendance/types/attendanceTypes';
-import { assertEmail } from '@/features/students/lib/studentEmails';
+import { rememberZoomName } from '@/features/students/lib/studentZoomNames';
+import { automaticIgnore, ignoredZoomName, splitZoomName } from './zoomNames';
+import { normalizeZoomName } from '@/features/students/lib/studentZoomNames';
+import { MAX_ZOOM_NAME_LENGTH, ZOOM_MATCHING_RULE } from '../const/zoomNameRules';
 import { uid } from '@/utils/uid';
 import type { ImportRow } from '../types/importTypes';
 export function applyImport(
@@ -24,6 +27,8 @@ export function applyImport(
   rows.forEach((row) => {
     if (!row.studentId) throw new Error('Resolve or ignore every attendee first.');
     if (row.studentId === 'ignore') return;
+    if (automaticIgnore(row))
+      throw new Error('Waiting room, host, co-host, and generic device rows must stay ignored.');
     if (!roster(data, session.classId).some((item) => item.studentId === row.studentId))
       throw new Error('Selected student is not enrolled in this group.');
     const cell = session.attendance[row.studentId] || blankCell();
@@ -37,23 +42,26 @@ export function applyImport(
     if (decisions.has(row.studentId) && decisions.get(row.studentId) !== decision)
       throw new Error('Repeated attendee rows have conflicting decisions.');
     decisions.set(row.studentId, decision);
-    if (row.saveEmail) {
-      assertEmail(data, row.email, row.studentId);
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email))
-        throw new Error('A valid email is required to save an additional email.');
-      const other = rows.find(
-        (item) => item.saveEmail && item.email === row.email && item.studentId !== row.studentId,
-      );
-      if (other) throw new Error('One email cannot be saved for two students.');
+    const parsed = splitZoomName(row.name);
+    for (const name of row.namesToSave || []) {
+      if (!name.trim() || name.length > MAX_ZOOM_NAME_LENGTH || ignoredZoomName(name))
+        throw new Error(
+          'Choose a personal Zoom name up to 200 characters. Device and excluded names cannot be saved.',
+        );
+      if (
+        ![parsed.displayName, parsed.originalName].some(
+          (value) => normalizeZoomName(value) === normalizeZoomName(name),
+        )
+      )
+        throw new Error('Only names shown in this report row can be approved.');
     }
   });
   if (!decisions.size) throw new Error('No matched students to import.');
   rows
-    .filter((row) => row.saveEmail && row.studentId !== 'ignore')
+    .filter((row) => row.studentId !== 'ignore')
     .forEach((row) => {
       const student = data.students.find((item) => item.id === row.studentId)!;
-      if (row.email !== student.email && !student.aliases.includes(row.email))
-        student.aliases.push(row.email);
+      for (const name of row.namesToSave || []) rememberZoomName(student, name, data.students);
     });
   const id = importId;
   const changes: {
@@ -82,6 +90,7 @@ export function applyImport(
     at: new Date().toISOString(),
     count: decisions.size,
     changes,
+    matchingRule: ZOOM_MATCHING_RULE,
   });
   recordEvent(data, `Imported ${filename} into ${session.date}`);
   return id;

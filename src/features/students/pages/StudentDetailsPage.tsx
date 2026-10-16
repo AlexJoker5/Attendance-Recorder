@@ -6,6 +6,7 @@ import { EnrollmentActionDialog } from '../components/EnrollmentActionDialog';
 import { StudentEnrollmentPanel } from '../components/StudentEnrollmentPanel';
 import { StudentProfileSummary } from '../components/StudentProfileSummary';
 import { StudentSemesterHistory } from '../components/StudentSemesterHistory';
+import { StudentZoomNamesPanel } from '../components/StudentZoomNamesPanel';
 import { useStudentDetails } from '../hooks/useStudentDetails';
 export default function StudentDetailsPage() {
   const model = useStudentDetails();
@@ -39,6 +40,12 @@ export default function StudentDetailsPage() {
         addAdditionalEmail={addAdditionalEmail}
       />
       {error && <ErrorState>{error}</ErrorState>}
+      <StudentZoomNamesPanel
+        student={student}
+        addZoomName={model.addZoomName}
+        removeZoomName={model.removeZoomName}
+        namesReady={model.namesReady}
+      />
       <StudentEnrollmentPanel
         semester={semester}
         enrollment={enrollment}

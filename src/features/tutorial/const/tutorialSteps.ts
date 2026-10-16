@@ -104,7 +104,7 @@ export const TUTORIAL_STEPS_BY_TRACK: Record<TutorialTrackId, TutorialStep[]> = 
       questBadge: 'Orientation · Roster',
       title: 'Student Management & Roster',
       description:
-        'Manage student enrollments, search instantly by name or email address, and add email aliases for automatic online meeting matching.',
+        'Manage student enrollments, search by name or contact email, and manage approved Zoom names for future attendance imports.',
       targetSelector: '[data-tour="nav-students"]',
       route: '/students',
       placement: 'right',
@@ -154,8 +154,7 @@ export const TUTORIAL_STEPS_BY_TRACK: Record<TutorialTrackId, TutorialStep[]> = 
       trackId: 'semesters',
       questBadge: 'Step 2 of 5 · Creation',
       title: 'Creating a New Semester',
-      description:
-        'Click the "Create semester" button to open the term creation dialog.',
+      description: 'Click the "Create semester" button to open the term creation dialog.',
       tip: 'Always create your semester first before attempting to add classes or enroll student batches.',
       targetSelector: '[data-tour="semester-create-btn"]',
       route: '/semesters',
@@ -287,8 +286,7 @@ export const TUTORIAL_STEPS_BY_TRACK: Record<TutorialTrackId, TutorialStep[]> = 
       trackId: 'students_import',
       questBadge: 'Step 2 of 6 · Enrollment Date',
       title: 'Setting Enrollment Date',
-      description:
-        'Select the date the students officially joined this cohort.',
+      description: 'Select the date the students officially joined this cohort.',
       caution:
         'Attendance Eligibility: Students only appear on session attendance lists that occur on or after their enrollment date. If this batch started at the beginning of the semester, pick the semester start date!',
       targetSelector: '[data-tour="import-enrollment-date"]',
@@ -313,8 +311,7 @@ export const TUTORIAL_STEPS_BY_TRACK: Record<TutorialTrackId, TutorialStep[]> = 
       trackId: 'students_import',
       questBadge: 'Step 4 of 6 · Header Row Selection',
       title: 'Header Row: Watch Out for Title Rows!',
-      description:
-        'The app needs to know which row contains your table column names.',
+      description: 'The app needs to know which row contains your table column names.',
       caution:
         'Common Trap: Many school spreadsheets have school headers, logos, or empty lines on rows 1–3. If your column titles start on row 4, change "Header row" to 4 so columns are detected accurately!',
       targetSelector: '[data-tour="import-header-row"]',
@@ -327,8 +324,7 @@ export const TUTORIAL_STEPS_BY_TRACK: Record<TutorialTrackId, TutorialStep[]> = 
       trackId: 'students_import',
       questBadge: 'Step 5 of 6 · Column Mapping',
       title: 'Careful Column Mapping',
-      description:
-        'Map your spreadsheet columns to the system fields.',
+      description: 'Map your spreadsheet columns to the system fields.',
       caution:
         'Be Careful With These Columns:\n1. Name Column: Must contain the student’s actual full name (do NOT map this to Student ID or serial number!).\n2. Email Column: Optional. If selected, every email must be a valid email format (e.g., student@school.com). If your spreadsheet has missing or informal emails, select "No email column" to prevent errors.',
       targetSelector: '[data-tour="import-column-mapping"]',
@@ -462,8 +458,7 @@ export const TUTORIAL_STEPS_BY_TRACK: Record<TutorialTrackId, TutorialStep[]> = 
       trackId: 'attendance',
       questBadge: 'Step 3 of 6 · Attendance Statuses',
       title: 'Understanding Status Options (P, A, L, E)',
-      description:
-        'Mark each student with their corresponding status:',
+      description: 'Mark each student with their corresponding status:',
       tip: '• Present (P): Fully attended.\n• Absent (A): Unexcused absence.\n• Late (L): Arrived late.\n• Excused (E): Approved absence — does NOT penalize student’s attendance rate!',
       targetSelector: '[data-tour="session-attendance-status"]',
       placement: 'bottom',
@@ -497,7 +492,7 @@ export const TUTORIAL_STEPS_BY_TRACK: Record<TutorialTrackId, TutorialStep[]> = 
       questBadge: 'Step 6 of 6 · Zoom Meeting Logs',
       title: 'Import Zoom Participant Logs',
       description:
-        'Teaching online? Click "Import Zoom report" inside any session to upload Zoom meeting attendee logs. The app auto-matches emails and calculates presence automatically!',
+        'Click "Import Zoom report" inside a session to match registered and approved Zoom names. Review close names, approve original names in parentheses, and ignore waiting-room, host, co-host, and generic device entries. Emails are not used for attendance matching.',
       targetSelector: '[data-tour="session-zoom-import-btn"]',
       placement: 'bottom',
       icon: 'file-spreadsheet',

@@ -28,6 +28,7 @@ export function useStudentForm({
         phone: values.phone,
         notes: values.notes,
         aliases: [...(existing?.aliases || [])],
+        zoomNames: [...(existing?.zoomNames || [])],
       };
       if (existing && values.keepEmail && existing.email !== values.email)
         student.aliases.push(existing.email);

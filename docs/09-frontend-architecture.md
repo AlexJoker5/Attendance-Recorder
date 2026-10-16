@@ -36,13 +36,13 @@ Zod schemas live in their own feature: loginSchema, groupSchema, enrollmentSchem
 
 Generic spreadsheet reading and exporting live in src/utils/readWorkbook.ts and src/utils/exportSheet.ts. Format definitions, limits, and workbook types live under utils/const and utils/types. SheetJS remains lazily imported. Accepted formats, upload limits, CSV formula protection, and browser downloads retain their existing behavior.
 
-Attendance matching, conflict decisions, additional-email ownership, applying imports, undo, and report row construction remain in features. Workbook mapping UI lives in imports/components and useWorkbookMapper. Keeping business rules out of generic file utilities allows student imports and attendance imports to share the same file reader without sharing their policies.
+Name-only attendance matching, close-name suggestions, approved Zoom-name ownership, conflict decisions, applying imports, undo, and report row construction remain in features. Workbook mapping UI lives in imports/components and useWorkbookMapper. Keeping business rules out of generic file utilities allows student imports and attendance imports to share the same file reader without sharing their policies.
 
 ## Review and validation
 
 Use TypeScript, ESLint, Prettier, and the production build for static/build validation. The owner manually reviews browser workflows. No test packages or automated test cases are part of this refactor. The development server stays stopped until the owner starts it again.
 
-Manual review should cover navigation/breadcrumbs and mobile controls; table search/sort/filter/pagination; student registration/enrollment/email removal/lifecycle reversal; class schedule previews and session restoration; attendance draft/finalization/rescheduling; CSV/XLSX mapping, matching, conflicts, import history/undo; and report exports. The actual Zoom sample and hosted Supabase workflow verification remain pending. SQL compilation and a local database walkthrough use isolated platform stand-ins; the coding agent did not change hosted data.
+Manual review should cover navigation/breadcrumbs and mobile controls; table search/sort/filter/pagination; student registration/enrollment/email removal/lifecycle reversal; class schedule previews and session restoration; attendance draft/finalization/rescheduling; CSV/XLSX mapping, matching, conflicts, import history/undo; and report exports. The supplied Zoom sample has been inspected and the name-only matching path exercised locally; hosted Supabase workflow verification remains pending. SQL compilation and a local database walkthrough use isolated platform stand-ins; the coding agent did not change hosted data.
 
 ## Custom dropdown and form validation
 
@@ -52,7 +52,7 @@ RecordForm and attendance status fields bind custom dropdowns through Controller
 
 Shared global styles live in Tailwind's components layer so utilities can override margins, padding, sizing, and font styles. Table cells use middle vertical alignment. Controls retain a 1px focused border and the shared indigo focus shadow. Create/edit forms omit the Cancel footer using Dialog isFooter={false}; the close button and Escape remain available. Confirmation dialogs retain their footer. Class schedule preview keeps its purpose-specific first-step label, then uses Create or Update.
 
-Student details provides Add additional email alongside the existing list/remove controls. A saved additional email is normalized, explicitly approved for future imports, and cannot duplicate the primary email, an existing alias, or another student's email ownership. The primary email is preserved, and changes use the same workspace repository in local and Supabase modes.
+Student details provides Add additional email alongside the existing list/remove controls. Additional emails remain contact information and are normalized, and cannot duplicate the primary email, an existing alias, or another student's email ownership. The primary email is preserved, and changes use the same workspace repository in local and Supabase modes. Approved Zoom names have a separate profile panel and schema; attendance matching never reads contact emails.
 
 ## Session names
 

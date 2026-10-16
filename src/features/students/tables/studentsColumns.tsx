@@ -9,7 +9,8 @@ export function createStudentsColumns({ t }: StudentsTableColumnProps): ColumnDe
   return [
     {
       id: 'name',
-      accessorFn: (row) => `${row.name} ${row.email} ${row.aliases?.join(' ') ?? ''}`,
+      accessorFn: (row) =>
+        `${row.name} ${row.email} ${row.aliases?.join(' ') ?? ''} ${row.zoomNames?.join(' ') ?? ''}`,
       header: t('Student'),
       sortingFn: (rowA, rowB) => rowA.original.name.localeCompare(rowB.original.name),
       cell: ({ row }) => (

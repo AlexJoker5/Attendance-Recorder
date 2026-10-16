@@ -8,6 +8,9 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
 import type { AdditionalEmailValues } from '../schemas/additionalEmailSchema';
 import { assertEmail } from '../lib/studentEmails';
+import { normalizeZoomName, rememberZoomName, zoomNameOwners } from '../lib/studentZoomNames';
+import { zoomNameSchema, type ZoomNameValues } from '../schemas/zoomNameSchema';
+import { localMode } from '@/lib/supabase';
 import type { EnrollmentActionValues } from '../schemas/enrollmentActionSchema';
 import type { Lifecycle } from '../types/enrollmentTypes';
 export function useStudentDetails() {
@@ -20,6 +23,35 @@ export function useStudentDetails() {
   const student = data?.students.find((item) => item.id === studentId);
   if (!data || !student) return null;
   const semester = selectedSemester(data, semesterId);
+  const namesReady = localMode || data.zoomMatchingVersion === 1;
+  const addZoomName = async (values: ZoomNameValues) => {
+    if (!namesReady)
+      throw new Error(
+        'Install supabase/009_zoom_name_matching.sql before importing attendance or saving Zoom names.',
+      );
+    const approved = zoomNameSchema.parse(values);
+    await change((next) => {
+      const current = next.students.find((item) => item.id === student.id)!;
+      if (zoomNameOwners([current], approved.name).length)
+        throw new Error('This name already matches this student.');
+      rememberZoomName(current, approved.name, next.students);
+      recordEvent(next, 'Approved Zoom name for ' + current.name + ': ' + approved.name);
+    });
+  };
+  const removeZoomName = async (name: string) => {
+    setError('');
+    try {
+      await change((next) => {
+        const current = next.students.find((item) => item.id === student.id)!;
+        current.zoomNames = (current.zoomNames || []).filter(
+          (value) => normalizeZoomName(value) !== normalizeZoomName(name),
+        );
+        recordEvent(next, 'Removed approved Zoom name for ' + current.name + ': ' + name);
+      });
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'Could not remove the Zoom name.');
+    }
+  };
   const enrollment = data.enrollments.find(
     (item) => item.semesterId === semester.id && item.studentId === student.id,
   );
@@ -66,6 +98,9 @@ export function useStudentDetails() {
     }
   };
   return {
+    addZoomName,
+    removeZoomName,
+    namesReady,
     removeAdditionalEmail,
     addAdditionalEmail,
     updateEnrollmentStatus,

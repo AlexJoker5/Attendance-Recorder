@@ -12,6 +12,7 @@ export interface AuditEvent {
 }
 export interface AppData {
   version: 1;
+  zoomMatchingVersion?: number;
   revision: number;
   semesters: Semester[];
   groups: Group[];

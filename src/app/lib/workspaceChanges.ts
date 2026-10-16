@@ -15,7 +15,6 @@ export function workspaceChanges(previous: AppData, next: AppData): Json {
   const importedCells = new Set(
     imports.flatMap((log) => log.changes.map((item) => log.sessionId + '/' + item.studentId)),
   );
-  const newImports = imports.filter((log) => !previous.imports.some((old) => old.id === log.id));
   const beforeSessions = new Map(previous.sessions.map((session) => [session.id, session]));
   const headers = next.sessions.map((session) => ({ ...session, attendance: undefined }));
   const oldHeaders = previous.sessions.map((session) => ({ ...session, attendance: undefined }));
@@ -30,20 +29,8 @@ export function workspaceChanges(previous: AppData, next: AppData): Json {
       )
       .map(([studentId, cell]) => ({ sessionId: session.id, studentId, ...cell })),
   );
-  // Import approval saves its aliases on the server, in the same transaction as attendance.
-  const aliasOnly = new Set(
-    newImports.flatMap((log) =>
-      (log.rows || []).filter((row) => row.saveEmail).map((row) => row.studentId),
-    ),
-  );
-  const students = changed(previous.students, next.students).filter((student) => {
-    const old = previous.students.find((item) => item.id === student.id);
-    return (
-      !aliasOnly.has(student.id) ||
-      !old ||
-      JSON.stringify({ ...old, aliases: [] }) !== JSON.stringify({ ...student, aliases: [] })
-    );
-  });
+  // Approved Zoom names and attendance are committed in one database transaction.
+  const students = changed(previous.students, next.students);
   const payload = {
     semesters: changed(previous.semesters, next.semesters),
     groups: changed(previous.groups, next.groups),

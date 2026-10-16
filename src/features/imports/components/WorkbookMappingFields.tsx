@@ -18,6 +18,9 @@ export type WorkbookMappingFieldsProps = Pick<
   | 'headers'
   | 'emailColumn'
   | 'setEmailColumn'
+  | 'waitingRoomColumn'
+  | 'setWaitingRoomColumn'
+  | 'purpose'
 >;
 export function WorkbookMappingFields({
   sheet,
@@ -32,6 +35,9 @@ export function WorkbookMappingFields({
   headers,
   emailColumn,
   setEmailColumn,
+  waitingRoomColumn,
+  setWaitingRoomColumn,
+  purpose,
 }: WorkbookMappingFieldsProps) {
   const { t } = useTranslation();
   if (!book) return null;
@@ -80,24 +86,41 @@ export function WorkbookMappingFields({
           }))}
         />
       </Field>
-      <Field htmlFor="email-column" label={t('Email column')}>
-        <Select
-          id="email-column"
-          value={emailColumn}
-          onValueChange={(value) => setEmailColumn(Number(value))}
-          options={[
-            { value: -1, label: t('No email column') },
-            ...headers.map((label, index) => ({
-              value: index,
-              label: (
-                <>
-                  {index + 1}. {label || t('Unnamed column')}
-                </>
-              ),
-            })),
-          ]}
-        />
-      </Field>
+      {purpose === 'students' ? (
+        <Field htmlFor="email-column" label={t('Email column')}>
+          <Select
+            id="email-column"
+            value={emailColumn}
+            onValueChange={(value) => setEmailColumn(Number(value))}
+            options={[
+              { value: -1, label: t('No email column') },
+              ...headers.map((label, index) => ({
+                value: index,
+                label: (
+                  <>
+                    {index + 1}. {label || t('Unnamed column')}
+                  </>
+                ),
+              })),
+            ]}
+          />
+        </Field>
+      ) : (
+        <Field htmlFor="waiting-room-column" label={t('Waiting room column')}>
+          <Select
+            id="waiting-room-column"
+            value={waitingRoomColumn}
+            onValueChange={(value) => setWaitingRoomColumn(Number(value))}
+            options={[
+              { value: -1, label: t('No waiting room column') },
+              ...headers.map((label, index) => ({
+                value: index,
+                label: `${index + 1}. ${label || t('Unnamed column')}`,
+              })),
+            ]}
+          />
+        </Field>
+      )}
     </div>
   );
 }

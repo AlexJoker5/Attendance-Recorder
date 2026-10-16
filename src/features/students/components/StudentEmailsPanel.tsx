@@ -26,7 +26,7 @@ export function StudentEmailsPanel({
         </Button>
       </div>
       <p className="muted mb-4">
-        {t('Approved for future imports. The primary email stays unchanged.')}
+        {t('Additional contact emails. Attendance imports match names only.')}
       </p>
       {student.aliases.map((email) => (
         <div key={email} className="actions justify-between mb-3">
