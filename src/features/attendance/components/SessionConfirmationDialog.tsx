@@ -6,13 +6,14 @@ import type { SessionModel } from '../hooks/useSessionAttendance';
 
 export type SessionConfirmationDialogProps = Pick<
   SessionModel,
-  'dialog' | 'setDialog' | 'confirmSessionAction' | 'error'
+  'dialog' | 'setDialog' | 'confirmSessionAction' | 'error' | 'saving'
 >;
 export function SessionConfirmationDialog({
   dialog,
   setDialog,
   confirmSessionAction,
   error,
+  saving,
 }: SessionConfirmationDialogProps) {
   const { t } = useTranslation();
   return (
@@ -20,9 +21,10 @@ export function SessionConfirmationDialog({
       <Dialog
         title={t(dialog === 'finalize' ? 'Finalize attendance' : 'Remove session')}
         onClose={() => setDialog(null)}
+        busy={saving}
         footer={
-          <Button variant="primary" onClick={confirmSessionAction}>
-            {t('Confirm')}
+          <Button variant="primary" onClick={confirmSessionAction} disabled={saving}>
+            {t(saving ? 'Saving…' : 'Confirm')}
           </Button>
         }
       >
@@ -33,7 +35,7 @@ export function SessionConfirmationDialog({
               : 'This session will be excluded from attendance results. Its records are preserved and it can be restored from the class page.',
           )}
         </p>
-        {error && <ErrorState>{error}</ErrorState>}
+        {error && <ErrorState>{t(error)}</ErrorState>}
       </Dialog>
     )
   );

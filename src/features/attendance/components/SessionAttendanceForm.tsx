@@ -20,6 +20,7 @@ export type SessionAttendanceFormProps = Pick<
   | 'formState'
   | 'session'
   | 'setDialog'
+  | 'saving'
 >;
 export function SessionAttendanceForm({
   handleSubmit,
@@ -34,6 +35,7 @@ export function SessionAttendanceForm({
   formState,
   session,
   setDialog,
+  saving,
 }: SessionAttendanceFormProps) {
   const { t } = useTranslation();
   return (
@@ -51,7 +53,7 @@ export function SessionAttendanceForm({
           filter={filter}
           source={source}
           students={students}
-          readonly={readonly}
+          readonly={readonly || saving}
           register={register}
           control={control}
         />
@@ -62,20 +64,27 @@ export function SessionAttendanceForm({
         </p>
       )}
       <div className="actions mt-6">
-        <Button type="submit" disabled={readonly || formState.isSubmitting}>
+        <Button type="submit" disabled={readonly || saving || formState.isSubmitting}>
           {t('Save draft')}
         </Button>
         <Button
           variant="primary"
-          disabled={readonly || session.date > today()}
+          disabled={readonly || saving || formState.isSubmitting || session.date > today()}
           onClick={() => setDialog('finalize')}
         >
           {t('Finalize attendance')}
         </Button>
-        <Button disabled={readonly} onClick={() => setDialog('reschedule')}>
+        <Button
+          disabled={readonly || saving || formState.isSubmitting}
+          onClick={() => setDialog('reschedule')}
+        >
           {t('Reschedule session')}
         </Button>
-        <Button variant="danger" disabled={readonly} onClick={() => setDialog('remove')}>
+        <Button
+          variant="danger"
+          disabled={readonly || saving || formState.isSubmitting}
+          onClick={() => setDialog('remove')}
+        >
           {t('Remove session')}
         </Button>
       </div>

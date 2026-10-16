@@ -6,7 +6,7 @@ import { exportSheet } from '@/utils/exportSheet';
 import type { SpreadsheetFormat } from '@/utils/types/spreadsheetTypes';
 import { uid } from '@/utils/uid';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { blankCell } from '../lib/attendanceCell';
@@ -15,15 +15,18 @@ import { finalizeSession, removeSession } from '../lib/sessionRules';
 import type { RescheduleSessionValues } from '../schemas/rescheduleSessionSchema';
 import type { SessionAttendanceValues } from '../schemas/sessionAttendanceSchema';
 import { sessionFormValues } from '../lib/sessionFormValues';
+import { verifySessionSave } from '../lib/verifySessionSave';
 import { sessionAttendanceSchema } from '../schemas/sessionAttendanceSchema';
 import type { ClassSession } from '../types/attendanceTypes';
 export function useSessionAttendance({ session }: { session: ClassSession }) {
   const { t } = useTranslation();
-  const { data, change } = useAppData();
+  const { data, change, saving } = useAppData();
   const { notify } = useWorkspace();
   const [filter, setFilter] = useState('all');
   const [source, setSource] = useState('all');
   const [error, setError] = useState('');
+  const [confirming, setConfirming] = useState(false);
+  const confirmationPending = useRef(false);
   const [dialog, setDialog] = useState<'finalize' | 'remove' | 'reschedule' | null>(null);
   const { register, control, handleSubmit, getValues, reset, formState } =
     useForm<SessionAttendanceValues>({
@@ -47,6 +50,7 @@ export function useSessionAttendance({ session }: { session: ClassSession }) {
         (source === 'all' || student.cell.source === source),
     );
   async function save(finalize = false) {
+    setError('');
     const values = sessionAttendanceSchema.parse(getValues());
     const saved = await change((next) => {
       const current = next.sessions.find((item) => item.id === session.id)!;
@@ -66,8 +70,9 @@ export function useSessionAttendance({ session }: { session: ClassSession }) {
       if (finalize) finalizeSession(next, session.id);
       recordEvent(next, `Saved session ${session.date}`);
     });
-    const savedSession = saved.sessions.find((item) => item.id === session.id)!;
-    reset(sessionFormValues(savedSession));
+    const savedSession = saved.sessions.find((item) => item.id === session.id);
+    if (savedSession) reset(sessionFormValues(savedSession));
+    verifySessionSave(saved, session.id, finalize);
     notify(t(finalize ? 'Attendance finalized.' : 'Draft saved.'));
   }
   async function exportAttendance(format: SpreadsheetFormat) {
@@ -98,6 +103,10 @@ export function useSessionAttendance({ session }: { session: ClassSession }) {
     }
   }
   const confirmSessionAction = async () => {
+    if (confirmationPending.current || saving || formState.isSubmitting) return;
+    confirmationPending.current = true;
+    setConfirming(true);
+    setError('');
     try {
       if (dialog === 'finalize') await save(true);
       else {
@@ -108,6 +117,9 @@ export function useSessionAttendance({ session }: { session: ClassSession }) {
       setDialog(null);
     } catch (reason) {
       setError(getErrorMessage(reason));
+    } finally {
+      confirmationPending.current = false;
+      setConfirming(false);
     }
   };
 
@@ -145,6 +157,7 @@ export function useSessionAttendance({ session }: { session: ClassSession }) {
     readonly,
     t,
     formState,
+    saving: saving || confirming,
     error,
     filter,
     setFilter,

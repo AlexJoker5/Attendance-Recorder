@@ -21,6 +21,7 @@ export function SessionEditor({ session }: { session: ClassSession }) {
     readonly,
     t,
     formState,
+    saving,
     error,
     filter,
     setFilter,
@@ -47,7 +48,11 @@ export function SessionEditor({ session }: { session: ClassSession }) {
           <>
             <ExportButtons onExport={exportAttendance} />
             {!readonly && (
-              <ButtonLink className="primary" data-tour="session-zoom-import-btn" to={'/imports/' + session.id}>
+              <ButtonLink
+                className="primary"
+                data-tour="session-zoom-import-btn"
+                to={'/imports/' + session.id}
+              >
                 <ArrowDownToLine size={16} />
                 {t('Import Zoom report')}
               </ButtonLink>
@@ -61,7 +66,7 @@ export function SessionEditor({ session }: { session: ClassSession }) {
           {t('Extra sessions do not count toward attendance percentages or leave limits.')}
         </p>
       )}
-      {error && <ErrorState>{error}</ErrorState>}
+      {error && <ErrorState>{t(error)}</ErrorState>}
       <AttendanceFilters
         filter={filter}
         setFilter={setFilter}
@@ -80,6 +85,7 @@ export function SessionEditor({ session }: { session: ClassSession }) {
           register={register}
           control={control}
           formState={formState}
+          saving={saving}
           session={session}
           setDialog={setDialog}
         />
@@ -101,6 +107,7 @@ export function SessionEditor({ session }: { session: ClassSession }) {
         setDialog={setDialog}
         confirmSessionAction={confirmSessionAction}
         error={error}
+        saving={saving}
       />
     </>
   );

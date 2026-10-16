@@ -29,6 +29,15 @@ export function workspaceChanges(previous: AppData, next: AppData): Json {
       )
       .map(([studentId, cell]) => ({ sessionId: session.id, studentId, ...cell })),
   );
+  const changedSessionHeaders = new Set(changed(oldHeaders, headers).map((session) => session.id));
+  const sessionsWithAttendanceWrites = new Set(attendance.map((cell) => cell.sessionId));
+  const sessions = headers.filter(
+    (session) =>
+      changedSessionHeaders.has(session.id) ||
+      // Saving cells reopens the database session as Draft. Send the requested
+      // final state again even if it was already Finalized in the cached workspace.
+      (session.finalized && sessionsWithAttendanceWrites.has(session.id)),
+  );
   // Approved Zoom names and attendance are committed in one database transaction.
   const students = changed(previous.students, next.students);
   const payload = {
@@ -37,7 +46,7 @@ export function workspaceChanges(previous: AppData, next: AppData): Json {
     classes: changed(previous.classes, next.classes),
     students,
     enrollments: changed(previous.enrollments, next.enrollments),
-    sessions: changed(oldHeaders, headers),
+    sessions,
     attendance,
     imports,
     deleteGroups: removed(previous.groups, next.groups),
