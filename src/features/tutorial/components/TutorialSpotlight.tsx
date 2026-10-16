@@ -99,10 +99,8 @@ export function TutorialSpotlight({
 
   // Update target rect & card placement
   useLayoutEffect(() => {
-    if (!isActive || !step) {
-      setTargetRect(null);
-      return;
-    }
+    if (!isActive || !step) return;
+    let frame: number | null = null;
 
     function calculatePosition() {
       if (!step?.targetSelector) {
@@ -129,7 +127,6 @@ export function TutorialSpotlight({
         return;
       }
 
-      element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       const b = element.getBoundingClientRect();
       const padding = 6;
       const rect: RectState = {
@@ -142,8 +139,8 @@ export function TutorialSpotlight({
 
       const cardWidth = Math.min(480, window.innerWidth - 32);
       const cardHeight = 390;
-      let left = 16;
-      let top = 16;
+      let left: number;
+      let top: number;
 
       const placement = window.innerWidth < 768 ? 'bottom' : step.placement;
 
@@ -187,13 +184,29 @@ export function TutorialSpotlight({
       setCardPos({ top, left });
     }
 
-    calculatePosition();
-    window.addEventListener('resize', calculatePosition);
-    window.addEventListener('scroll', calculatePosition, true);
+    // Measure after DOM updates and coalesce smooth-scroll/resize events into one frame.
+    function schedulePosition() {
+      if (frame !== null) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = null;
+        calculatePosition();
+      });
+    }
+
+    if (step.targetSelector) {
+      document.querySelector<HTMLElement>(step.targetSelector)?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+    schedulePosition();
+    window.addEventListener('resize', schedulePosition);
+    window.addEventListener('scroll', schedulePosition, true);
 
     return () => {
-      window.removeEventListener('resize', calculatePosition);
-      window.removeEventListener('scroll', calculatePosition, true);
+      if (frame !== null) window.cancelAnimationFrame(frame);
+      window.removeEventListener('resize', schedulePosition);
+      window.removeEventListener('scroll', schedulePosition, true);
     };
   }, [isActive, step]);
 

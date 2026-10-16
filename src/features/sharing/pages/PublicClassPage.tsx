@@ -26,17 +26,6 @@ export function PublicClassPage({ data, token }: { data: PublicClass; token: str
           <p className="panel">{t('No finalized sessions have been published yet.')}</p>
         )}
       </section>
-      <section className="space-y-4">
-        <h2>
-          {t('Class students')} <span className="muted">({data.students.length})</span>
-        </h2>
-        <DataTable
-          data={data.students}
-          columns={[{ accessorKey: 'name', header: t('Student') }]}
-          showCreatedDate={false}
-          searchPlaceholder="Search students"
-        />
-      </section>
     </div>
   );
 }

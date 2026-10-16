@@ -2,6 +2,7 @@ import { Badge } from '@/components/ui/Badge';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ImportSessionModel } from '../hooks/useImportReview';
 import { ImportRowResolution } from '../components/ImportRowResolution';
+import { compareImportReviewRows } from '../lib/importReviewOrder';
 
 export type ImportReviewTableDataProps = Pick<ImportSessionModel, 'rows' | 'filter'>;
 export type ImportReviewTableColumnProps = Pick<
@@ -43,6 +44,7 @@ export function createImportReviewColumns(
     },
     {
       id: 'description',
+      sortingFn: (a, b) => compareImportReviewRows(a.original, b.original),
       accessorFn: (row) => row.description,
       header: t('Match status'),
       cell: ({ row }) => (

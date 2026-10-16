@@ -1,12 +1,5 @@
 import { localMode, supabase } from '@/lib/supabase';
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { TutorialPromptModal } from '../components/TutorialPromptModal';
 import { TutorialSpotlight } from '../components/TutorialSpotlight';
@@ -92,8 +85,11 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const currentTrackSteps = TUTORIAL_STEPS_BY_TRACK[activeTrackId] ?? TUTORIAL_STEPS_BY_TRACK.overview;
-  const currentStep: TutorialStep | null = isActive ? currentTrackSteps[currentStepIndex] ?? null : null;
+  const currentTrackSteps =
+    TUTORIAL_STEPS_BY_TRACK[activeTrackId] ?? TUTORIAL_STEPS_BY_TRACK.overview;
+  const currentStep: TutorialStep | null = isActive
+    ? (currentTrackSteps[currentStepIndex] ?? null)
+    : null;
 
   // Single-object persistence helper
   const saveProgress = useCallback(
@@ -121,6 +117,7 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
   // Initialize and force tutorial on first time sign up / login
   useEffect(() => {
     let disposed = false;
+    let startupTimer: number | undefined;
 
     async function initUserTutorial() {
       // Clean up old fragmented localStorage keys once
@@ -158,28 +155,22 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
         const trackToResume = userProgress.activeTrackId || 'overview';
         const stepToResume = userProgress.stepIndices[trackToResume] ?? 0;
 
-        const timer = window.setTimeout(() => {
+        startupTimer = window.setTimeout(() => {
           if (!disposed) {
             setActiveTrackId(trackToResume);
             setCurrentStepIndex(stepToResume);
             setIsActive(true);
 
-            // Auto-navigate to required route if defined
-            const targetStep =
-              (TUTORIAL_STEPS_BY_TRACK[trackToResume] ?? TUTORIAL_STEPS_BY_TRACK.overview)[stepToResume];
-            if (targetStep?.route && location.pathname !== targetStep.route) {
-              navigate(targetStep.route);
-            }
+            // The route-sync effect below navigates when this step becomes active.
           }
         }, 1200);
-
-        return () => window.clearTimeout(timer);
       }
     }
 
     void initUserTutorial();
     return () => {
       disposed = true;
+      if (startupTimer !== undefined) window.clearTimeout(startupTimer);
     };
   }, []);
 
@@ -214,7 +205,9 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
         skipped: false, // user re-engaged
       });
 
-      const initialStep = (TUTORIAL_STEPS_BY_TRACK[trackId] ?? TUTORIAL_STEPS_BY_TRACK.overview)[stepIdx];
+      const initialStep = (TUTORIAL_STEPS_BY_TRACK[trackId] ?? TUTORIAL_STEPS_BY_TRACK.overview)[
+        stepIdx
+      ];
       if (initialStep?.route && location.pathname !== initialStep.route) {
         navigate(initialStep.route);
       }
@@ -237,7 +230,9 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
   const skipCurrentTrack = useCallback(() => {
     const updatedCompleted = Array.from(new Set([...progress.completedTracks, activeTrackId]));
     const currentOrderIdx = TRACK_ORDER.indexOf(activeTrackId);
-    const nextTrack = TRACK_ORDER.slice(currentOrderIdx + 1).find((t) => !updatedCompleted.includes(t));
+    const nextTrack = TRACK_ORDER.slice(currentOrderIdx + 1).find(
+      (t) => !updatedCompleted.includes(t),
+    );
 
     if (nextTrack) {
       const nextStepIdx = progress.stepIndices[nextTrack] ?? 0;
@@ -247,7 +242,9 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
         activeTrackId: nextTrack,
         completedTracks: updatedCompleted,
       });
-      const initialStep = (TUTORIAL_STEPS_BY_TRACK[nextTrack] ?? TUTORIAL_STEPS_BY_TRACK.overview)[nextStepIdx];
+      const initialStep = (TUTORIAL_STEPS_BY_TRACK[nextTrack] ?? TUTORIAL_STEPS_BY_TRACK.overview)[
+        nextStepIdx
+      ];
       if (initialStep?.route && location.pathname !== initialStep.route) {
         navigate(initialStep.route);
       }
@@ -279,7 +276,9 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
       // Finished the current topic!
       const updatedCompleted = Array.from(new Set([...progress.completedTracks, activeTrackId]));
       const currentOrderIdx = TRACK_ORDER.indexOf(activeTrackId);
-      const nextTrack = TRACK_ORDER.slice(currentOrderIdx + 1).find((t) => !updatedCompleted.includes(t));
+      const nextTrack = TRACK_ORDER.slice(currentOrderIdx + 1).find(
+        (t) => !updatedCompleted.includes(t),
+      );
 
       if (nextTrack) {
         // AUTOMATICALLY FORCE/CONTINUE INTO THE NEXT TOPIC!
@@ -292,7 +291,8 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
           stepIndices: { [nextTrack]: nextStepIdx },
         });
 
-        const initialStep = (TUTORIAL_STEPS_BY_TRACK[nextTrack] ?? TUTORIAL_STEPS_BY_TRACK.overview)[nextStepIdx];
+        const initialStep = (TUTORIAL_STEPS_BY_TRACK[nextTrack] ??
+          TUTORIAL_STEPS_BY_TRACK.overview)[nextStepIdx];
         if (initialStep?.route && location.pathname !== initialStep.route) {
           navigate(initialStep.route);
         }
@@ -362,6 +362,7 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
 
       {/* Interactive Spotlight & Guide Card */}
       <TutorialSpotlight
+        key={currentStep?.id ?? 'inactive'}
         isActive={isActive}
         step={currentStep}
         stepIndex={currentStepIndex}

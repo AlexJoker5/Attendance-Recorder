@@ -3,6 +3,7 @@ import { ButtonLink } from '@/components/ui/ButtonLink';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { StudentsModel } from '../hooks/useStudentsPage';
 import { studentSearchText } from '../lib/studentSearchText';
+import { compareStudentNames } from '../lib/studentNameOrder';
 type StudentsRow = StudentsModel['rows'][number];
 export type StudentsTableColumnProps = Pick<StudentsModel, 't'>;
 
@@ -12,7 +13,7 @@ export function createStudentsColumns({ t }: StudentsTableColumnProps): ColumnDe
       id: 'name',
       accessorFn: studentSearchText,
       header: t('Student'),
-      sortingFn: (rowA, rowB) => rowA.original.name.localeCompare(rowB.original.name),
+      sortingFn: (rowA, rowB) => compareStudentNames(rowA.original, rowB.original),
       cell: ({ row }) => (
         <>
           <strong>{row.original.name}</strong>

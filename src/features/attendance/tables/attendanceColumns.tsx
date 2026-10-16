@@ -1,4 +1,5 @@
 import { Controller } from 'react-hook-form';
+import { compareStudentNames } from '@/features/students/lib/studentNameOrder';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import type { ColumnDef } from '@tanstack/react-table';
@@ -20,6 +21,7 @@ export function createAttendanceColumns({
   return [
     {
       accessorKey: 'name',
+      sortingFn: (a, b) => compareStudentNames(a.original, b.original),
       header: t('Student'),
       cell: ({ row }) => (
         <>

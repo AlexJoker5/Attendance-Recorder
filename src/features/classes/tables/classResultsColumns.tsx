@@ -1,4 +1,5 @@
 import { formatPercentage } from '@/utils/formatPercentage';
+import { compareStudentNames } from '@/features/students/lib/studentNameOrder';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Link } from 'react-router';
 import type { ClassDetailsModel } from '../hooks/useClassDetails';
@@ -11,6 +12,7 @@ export function createClassResultsColumns({
   return [
     {
       id: 'student',
+      sortingFn: (a, b) => compareStudentNames(a.original.student, b.original.student),
       accessorFn: (row) => row.student.name,
       header: t('Student'),
       cell: ({ row }) => (

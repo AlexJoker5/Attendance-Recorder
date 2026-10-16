@@ -1,6 +1,8 @@
+import type { ConnectionRouteResponse } from '../src/features/connection/types/connectionRouteTypes';
+
 export const config = { runtime: 'edge' };
 
-export default async function handler(req: any, res?: any) {
+export default async function handler(req: Pick<Request, 'method'>, res?: ConnectionRouteResponse) {
   const responseHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
     'Cache-Control': 'private, no-store',

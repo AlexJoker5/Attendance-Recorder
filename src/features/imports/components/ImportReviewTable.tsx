@@ -1,4 +1,5 @@
 import { DataTable } from '@/components/ui/table/DataTable';
+import { IMPORT_REVIEW_SORTING } from '../const/importReviewSorting';
 import { useTranslation } from 'react-i18next';
 import type { ImportSessionModel } from '../hooks/useImportReview';
 import { createImportReviewColumns, selectImportReviewRows } from '../tables/importReviewColumns';
@@ -18,6 +19,7 @@ export function ImportReviewTable({
   return (
     <DataTable
       key={filter}
+      initialSorting={IMPORT_REVIEW_SORTING}
       createdDateEmptyLabel="Not saved yet"
       data={selectImportReviewRows({ rows, filter })}
       columns={createImportReviewColumns({ t, data, session, update, students })}

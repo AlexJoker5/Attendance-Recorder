@@ -1,7 +1,8 @@
-import type { ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef, SortingState } from '@tanstack/react-table';
 export interface DataTableProps<T> {
   data: T[];
   columns: ColumnDef<T>[];
+  initialSorting?: SortingState;
   label?: string;
   searchPlaceholder?: string;
   showCreatedDate?: boolean;

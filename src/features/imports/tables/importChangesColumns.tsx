@@ -1,4 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table';
+import { compareStudentNames } from '@/features/students/lib/studentNameOrder';
 import type { ImportsModel } from '../hooks/useImportHistory';
 type ImportChangesRow = ImportsModel['plan'][number];
 export type ImportChangesTableColumnProps = Pick<ImportsModel, 't' | 'log'>;
@@ -9,7 +10,11 @@ export function createImportChangesColumns({
 }: ImportChangesTableColumnProps): ColumnDef<ImportChangesRow>[] {
   if (!log) return [];
   return [
-    { accessorKey: 'name', header: t('Student') },
+    {
+      accessorKey: 'name',
+      header: t('Student'),
+      sortingFn: (a, b) => compareStudentNames(a.original, b.original),
+    },
     { id: 'before', accessorFn: (row) => row.before.status, header: t('Before') },
     { id: 'after', accessorFn: (row) => row.after.status, header: t('After') },
     {

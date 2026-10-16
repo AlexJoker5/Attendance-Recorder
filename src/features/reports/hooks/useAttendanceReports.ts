@@ -3,6 +3,7 @@ import { useWorkspace } from '@/app/hooks/useWorkspace';
 import { selectedSemester } from '@/app/lib/workspaceSelectors';
 import { blankCell } from '@/features/attendance/lib/attendanceCell';
 import { roster } from '@/features/attendance/lib/attendanceSelectors';
+import { compareStudentNames } from '@/features/students/lib/studentNameOrder';
 import { exportSheet } from '@/utils/exportSheet';
 import type { SpreadsheetFormat } from '@/utils/types/spreadsheetTypes';
 import { useState } from 'react';
@@ -76,17 +77,19 @@ export function useAttendanceReports() {
       const sessions = data!.sessions
         .filter((session) => session.classId === selected.id && !session.removed && !session.extra)
         .sort((a, b) => a.date.localeCompare(b.date));
-      const rows = roster(data!, selected.id).map((enrollment) => {
-        const student = data!.students.find((item) => item.id === enrollment.studentId)!;
-        return [
-          student.name,
-          student.email,
-          ...sessions.map((session) => {
-            const cell = session.attendance[student.id] || blankCell();
-            return cell.status + (cell.remark ? ' — ' + cell.remark : '');
-          }),
-        ];
-      });
+      const rows = roster(data!, selected.id)
+        .map((enrollment) => data!.students.find((item) => item.id === enrollment.studentId)!)
+        .sort(compareStudentNames)
+        .map((student) => {
+          return [
+            student.name,
+            student.email,
+            ...sessions.map((session) => {
+              const cell = session.attendance[student.id] || blankCell();
+              return cell.status + (cell.remark ? ' — ' + cell.remark : '');
+            }),
+          ];
+        });
       await exportSheet(
         selected.name + '-attendance-matrix',
         [

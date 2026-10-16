@@ -1,4 +1,5 @@
 import { Select } from '@/components/ui/Select';
+import { compareStudentNames } from '@/features/students/lib/studentNameOrder';
 import type { ImportReviewTableColumnProps } from '../tables/importReviewColumns';
 import type { ImportRow } from '../types/importTypes';
 import { ZoomNameApproval } from './ZoomNameApproval';
@@ -42,12 +43,10 @@ export function ImportRowResolution({
         options={[
           { value: '', label: t('Choose student') },
           { value: 'ignore', label: t('Ignore attendee') },
-          ...[
-            ...suggestions,
-            ...students.filter(
-              (student) => !suggestions.some((candidate) => candidate.id === student.id),
-            ),
-          ].map((student) => ({ value: student.id, label: `${student.name} · ${student.email}` })),
+          ...[...students].sort(compareStudentNames).map((student) => ({
+            value: student.id,
+            label: `${student.name} · ${student.email}`,
+          })),
         ]}
       />
       {selected && (

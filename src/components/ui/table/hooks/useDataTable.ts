@@ -9,9 +9,13 @@ import {
 import { useState } from 'react';
 import { DEFAULT_TABLE_PAGE_SIZE } from '../const/tableDefaults';
 import type { DataTableProps } from '../types/dataTableTypes';
-export function useDataTable<T>({ data, columns }: Pick<DataTableProps<T>, 'data' | 'columns'>) {
+export function useDataTable<T>({
+  data,
+  columns,
+  initialSorting,
+}: Pick<DataTableProps<T>, 'data' | 'columns' | 'initialSorting'>) {
   const [filter, setFilter] = useState('');
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>(() => initialSorting ?? []);
   return useReactTable({
     data,
     columns,

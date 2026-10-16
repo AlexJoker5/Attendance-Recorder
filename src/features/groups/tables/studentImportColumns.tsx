@@ -1,4 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table';
+import { compareStudentNames } from '@/features/students/lib/studentNameOrder';
 import type { StudentImportModel } from '../hooks/useStudentImport';
 import type { StudentImportRow } from '../types/studentImportTypes';
 export function createStudentImportColumns({
@@ -26,7 +27,11 @@ export function createStudentImportColumns({
         />
       ),
     },
-    { accessorKey: 'name', header: t('Student') },
+    {
+      accessorKey: 'name',
+      header: t('Student'),
+      sortingFn: (a, b) => compareStudentNames(a.original, b.original),
+    },
     { accessorKey: 'email', header: t('Email') },
     {
       accessorKey: 'description',

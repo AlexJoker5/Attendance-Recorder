@@ -9,6 +9,7 @@ import type { DataTableProps } from './types/dataTableTypes';
 export function DataTable<T>({
   data,
   columns,
+  initialSorting,
   label = 'Search table',
   searchPlaceholder = 'Search table',
   showCreatedDate = true,
@@ -25,7 +26,7 @@ export function DataTable<T>({
         i18n.language,
       )
     : columns;
-  const table = useDataTable({ data, columns: tableColumns });
+  const table = useDataTable({ data, columns: tableColumns, initialSorting });
   return (
     <div className="table-shell">
       <DataTableToolbar table={table} label={label} searchPlaceholder={searchPlaceholder} />{' '}

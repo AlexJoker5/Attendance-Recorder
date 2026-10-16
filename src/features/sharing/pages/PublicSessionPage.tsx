@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/Badge';
 import { DataTable } from '@/components/ui/table/DataTable';
+import { STUDENT_NAME_SORTING } from '@/features/students/const/studentSorting';
 import { publicAttendanceColumns, publicSessionName } from '../tables/publicColumns';
 import type { PublicClass, PublicSession } from '../types/sharingTypes';
 
@@ -36,6 +37,7 @@ export function PublicSessionPage({
       </div>
       <DataTable
         data={data.attendance}
+        initialSorting={STUDENT_NAME_SORTING}
         columns={publicAttendanceColumns(t)}
         showCreatedDate={false}
         searchPlaceholder="Search students"

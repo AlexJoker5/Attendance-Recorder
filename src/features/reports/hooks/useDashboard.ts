@@ -23,7 +23,7 @@ export function useDashboard() {
   );
   const risk = new Set(
     results
-      .filter((row) => row.label === 'Failed' || row.label === 'At risk')
+      .filter((row) => row.label === 'Failed')
       .map((row) => row.student.id),
   ).size;
   const stats = [

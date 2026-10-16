@@ -3,6 +3,7 @@ import { useWorkspace } from '@/app/hooks/useWorkspace';
 import { selectedSemester } from '@/app/lib/workspaceSelectors';
 import { useTranslation } from 'react-i18next';
 import { enroll } from '../lib/enrollmentRules';
+import { compareStudentNames } from '../lib/studentNameOrder';
 
 export function useEnrollmentForm({
   studentId,
@@ -19,12 +20,14 @@ export function useEnrollmentForm({
   if (!data) return null;
   const semester = selectedSemester(data, semesterId);
   const groups = data.groups.filter((group) => group.semesterId === semester.id && !group.archived);
-  const students = data.students.filter(
-    (student) =>
-      !data.enrollments.some(
-        (item) => item.semesterId === semester.id && item.studentId === student.id,
-      ),
-  );
+  const students = data.students
+    .filter(
+      (student) =>
+        !data.enrollments.some(
+          (item) => item.semesterId === semester.id && item.studentId === student.id,
+        ),
+    )
+    .sort(compareStudentNames);
   const saveStudent = async (values: { studentId: string; groupId: string; joined: string }) => {
     await change((next) => enroll(next, values.studentId, values.groupId, values.joined));
     notify(t('Student enrolled.'));

@@ -2,6 +2,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import type { TFunction } from 'i18next';
 import { Badge } from '@/components/ui/Badge';
 import { ButtonLink } from '@/components/ui/ButtonLink';
+import { compareStudentNames } from '@/features/students/lib/studentNameOrder';
 import { publicClassPath } from '../lib/shareLinks';
 import type { PublicAttendance, PublicSession } from '../types/sharingTypes';
 
@@ -31,7 +32,11 @@ export function publicSessionsColumns(token: string, t: TFunction): ColumnDef<Pu
 }
 export function publicAttendanceColumns(t: TFunction): ColumnDef<PublicAttendance>[] {
   return [
-    { accessorKey: 'name', header: t('Student') },
+    {
+      accessorKey: 'name',
+      header: t('Student'),
+      sortingFn: (a, b) => compareStudentNames(a.original, b.original),
+    },
     {
       accessorKey: 'status',
       header: t('Attendance'),
