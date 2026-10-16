@@ -1,4 +1,4 @@
-export type ConnectionRoute = 'direct' | 'worker';
+export type ConnectionRoute = 'direct' | 'worker' | 'site';
 export type ConnectionPhase = 'preparing' | 'switching' | 'ready' | 'error';
 
 export interface ConnectionSnapshot {
@@ -12,4 +12,5 @@ export interface ConnectionOptions {
   proxy: string;
   key: string;
   development: boolean;
+  siteRelay?: string;
 }

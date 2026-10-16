@@ -2,6 +2,8 @@ export const COUNTRY_ROUTE_PATH = '/api/connectionRoute';
 export const CONNECTION_CHECK_TIMEOUT_MS = 5000;
 export const CONNECTION_REQUEST_TIMEOUT_MS = 60_000;
 export const CLOUDFLARE_PREFERENCE_PREFIX = 'attendance-cloudflare-fallback:';
+export const SITE_RELAY_PATH = '/api/supabase';
+export const SITE_RELAY_PREFERENCE_PREFIX = 'attendance-site-relay:';
 
 // ISO 3166-1 country codes. Unknown markers such as XX/ZZ must use the Worker.
 export const COUNTRY_CODES = new Set(

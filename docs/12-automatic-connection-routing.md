@@ -1,5 +1,7 @@
 # Automatic connection routing
 
+**Current behavior update (October 16, 2026):** The current routing endpoint selects direct Supabase first; the earlier country-selection rules below describe the original implementation. Recovery now also supports a remembered same-site Vercel relay when both direct Supabase and the Worker have network failures. Use [Vercel relay connectivity](15-vercel-relay-connectivity.md) for the current deployment and verification steps. A saved website-relay choice takes precedence over the older Worker preference.
+
 Implemented October 5, 2026. The application chooses a connection before initializing Supabase Auth. This feature uses the existing Vercel and Cloudflare setup, with no new package or geolocation subscription.
 
 ## Routing rules

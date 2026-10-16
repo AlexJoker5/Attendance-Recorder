@@ -1,5 +1,6 @@
 import type { Database } from '@/app/types/databaseTypes';
 import { createConnectionRouter } from '@/features/connection/lib/createConnectionRouter';
+import { SITE_RELAY_PATH } from '@/features/connection/const/connectionConfig';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { supabaseConfig } from './supabaseConfig';
 
@@ -19,6 +20,8 @@ export const connectionRouter =
         proxy: config.proxy,
         key: config.key,
         development: import.meta.env.DEV,
+        // Plain Vite has no external rewrites. Production uses the site's Vercel relay.
+        siteRelay: import.meta.env.PROD ? window.location.origin + SITE_RELAY_PATH : undefined,
       })
     : null;
 

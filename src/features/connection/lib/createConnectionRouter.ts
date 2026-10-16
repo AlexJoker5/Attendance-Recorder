@@ -15,6 +15,7 @@ import {
   detectConnectionRoute,
   withConnectionTimeout,
 } from './connectionRequests';
+import { prefersSiteRelay, rememberSiteRelay } from './siteRelayPreference';
 
 export function createConnectionRouter(options: ConnectionOptions) {
   let route: ConnectionRoute | null = null;
@@ -52,6 +53,35 @@ export function createConnectionRouter(options: ConnectionOptions) {
     update('switching', 'Connecting directly…');
   }
 
+  function selectSiteRelay() {
+    route = 'site';
+    update('switching', 'Connecting through this website…');
+  }
+
+  function routeEndpoint(selected: ConnectionRoute | null) {
+    if (selected === 'site') {
+      if (!options.siteRelay) throw new Error('The website relay is not configured.');
+      return options.siteRelay;
+    }
+    return selected === 'worker' ? options.proxy : options.original;
+  }
+
+  async function checkSiteRelay() {
+    selectSiteRelay();
+    await checkConnection(routeEndpoint('site'), options.key);
+    // Persist only a successful relay. Future page loads skip both failing API hosts.
+    rememberSiteRelay(options.original);
+  }
+
+  async function checkWithSiteFallback(selected: 'direct' | 'worker') {
+    try {
+      await checkConnection(routeEndpoint(selected), options.key);
+    } catch (error) {
+      if (!(error instanceof ConnectionNetworkError) || !options.siteRelay) throw error;
+      await checkSiteRelay();
+    }
+  }
+
   function run(operation: () => Promise<void>) {
     if (pending) return pending;
     pending = operation()
@@ -70,22 +100,27 @@ export function createConnectionRouter(options: ConnectionOptions) {
     if (snapshot.phase === 'ready') return Promise.resolve();
     return run(async () => {
       update('preparing', 'Preparing your connection…');
+      if (options.siteRelay && (route === 'site' || prefersSiteRelay(options.original))) {
+        await checkSiteRelay();
+        update('ready', '');
+        return;
+      }
       if (prefersCloudflare(options.original)) route = 'worker';
       if (!route) route = await detectConnectionRoute(options.development);
       if (prefersCloudflare(options.original)) route = 'worker';
 
       try {
-        await checkConnection(route === 'direct' ? options.original : options.proxy, options.key);
+        await checkConnection(routeEndpoint(route), options.key);
       } catch (error) {
         if (!(error instanceof ConnectionNetworkError)) throw error;
         // Bidirectional resilience: if worker fails (e.g. Cloudflare blocked in Myanmar),
         // fallback to direct. If direct fails, fallback to worker.
         if (route === 'direct') {
           useWorker();
-          await checkConnection(options.proxy, options.key);
+          await checkWithSiteFallback('worker');
         } else {
           useDirect();
-          await checkConnection(options.original, options.key);
+          await checkWithSiteFallback('direct');
         }
       }
       update('ready', '');
@@ -97,7 +132,7 @@ export function createConnectionRouter(options: ConnectionOptions) {
     if (route === 'worker' && snapshot.phase === 'ready') return Promise.resolve();
     return run(async () => {
       useWorker();
-      await checkConnection(options.proxy, options.key);
+      await checkWithSiteFallback('worker');
       update('ready', '');
     });
   }
@@ -107,7 +142,7 @@ export function createConnectionRouter(options: ConnectionOptions) {
     if (route === 'direct' && snapshot.phase === 'ready') return Promise.resolve();
     return run(async () => {
       useDirect();
-      await checkConnection(options.original, options.key);
+      await checkWithSiteFallback('direct');
       update('ready', '');
     });
   }
@@ -132,15 +167,20 @@ export function createConnectionRouter(options: ConnectionOptions) {
 
     async function send(outgoing: Request) {
       const target = new URL(outgoing.url);
-      const origin = route === 'direct' ? options.original : options.proxy;
+      const origin = routeEndpoint(route);
       // Assign the origin separately so paths/query parameters cannot select another host.
       const endpoint = new URL(origin);
-      endpoint.pathname = target.pathname;
+      endpoint.pathname = endpoint.pathname.replace(/\/$/, '') + target.pathname;
       endpoint.search = target.search;
       const routed = new Request(endpoint, outgoing);
       return withConnectionTimeout(
         async (signal) => {
-          const response = await fetch(routed, { signal, cache: 'no-store', redirect: 'error' });
+          const response = await fetch(routed, {
+            signal,
+            cache: 'no-store',
+            redirect: 'error',
+            credentials: 'omit',
+          });
           if (
             !response.body ||
             response.status === 204 ||
@@ -169,8 +209,17 @@ export function createConnectionRouter(options: ConnectionOptions) {
       if (!(error instanceof ConnectionNetworkError) || request.signal.aborted) throw error;
       if (attemptedRoute === 'direct') {
         await switchToWorker();
-      } else {
+      } else if (attemptedRoute === 'worker') {
         await switchToDirect();
+      } else {
+        // A saved website relay stays selected; never probe blocked hosts on every failure.
+        fail(error);
+        if (!retryRequest)
+          throw new Error(
+            'The connection was interrupted. Review the latest records before trying again; the request may already have completed.',
+            { cause: error },
+          );
+        throw error;
       }
       if (!retryRequest)
         throw new Error(

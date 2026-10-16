@@ -38,6 +38,8 @@ See [Frontend architecture](docs/09-frontend-architecture.md) for the approved r
 
 ## Cloudflare connectivity proxy
 
+For networks where both Supabase and the Worker fail, see [Vercel relay connectivity](docs/15-vercel-relay-connectivity.md). The hosted app can recover through `/api/supabase` on its own Vercel origin and remember that choice. Deploy the updated `vercel.json` together with the frontend; no new environment variables are required.
+
 Follow [Cloudflare Worker setup](docs/11-cloudflare-worker-setup.md) to deploy the included Worker through Cloudflare's dashboard, verify reachability from Myanmar, and configure Vercel. Connected mode requires `VITE_SUPABASE_PROXY_URL` alongside the original `VITE_SUPABASE_URL` and publishable key. Myanmar and unknown IP countries use the Worker; other recognized countries try direct Supabase. If the direct connection fails, the app automatically switches to Cloudflare and remembers that preference across browser visits. Auth, RPCs, and private report uploads/downloads share the selected route and the existing project-specific login storage key. See [Automatic connection routing](docs/12-automatic-connection-routing.md) for deployment and manual verification.
 
 The maintained TypeScript source is in `cloudflare/supabase-proxy/src`; the ready-to-paste dashboard module is `cloudflare/supabase-proxy/worker.js`. Run `npm run build:worker` after source changes. This uses the project's existing TypeScript, Vite, and Prettier packages. Deployment is performed separately by the owner. No Cloudflare runtime package is added to the React app.

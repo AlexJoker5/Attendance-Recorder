@@ -2,7 +2,25 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "rewrites": [{ "source": "/((?!api(?:/|$)).*)", "destination": "/index.html" }],
+  "rewrites": [
+    {
+      "source": "/api/supabase/auth/v1/:action(token|logout|recover|settings|user|verify)",
+      "destination": "https://gddjgyhpvxuylfrylwmv.supabase.co/auth/v1/:action"
+    },
+    {
+      "source": "/api/supabase/rest/v1/rpc/:rpc(is_attendance_admin|attendance_workspace|attendance_commit|attendance_original|attendance_class_share|attendance_public_class)",
+      "destination": "https://gddjgyhpvxuylfrylwmv.supabase.co/rest/v1/rpc/:rpc"
+    },
+    {
+      "source": "/api/supabase/storage/v1/object/zoom-originals/:path*",
+      "destination": "https://gddjgyhpvxuylfrylwmv.supabase.co/storage/v1/object/zoom-originals/:path*"
+    },
+    {
+      "source": "/api/supabase/storage/v1/object/authenticated/zoom-originals/:path*",
+      "destination": "https://gddjgyhpvxuylfrylwmv.supabase.co/storage/v1/object/authenticated/zoom-originals/:path*"
+    },
+    { "source": "/((?!api(?:/|$)).*)", "destination": "/index.html" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -10,6 +28,16 @@
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
         { "key": "X-Frame-Options", "value": "DENY" }
+      ]
+    },
+    {
+      "source": "/api/supabase/:path*",
+      "headers": [
+        { "key": "Cache-Control", "value": "private, no-store" },
+        { "key": "CDN-Cache-Control", "value": "no-store" },
+        { "key": "Vercel-CDN-Cache-Control", "value": "no-store" },
+        { "key": "x-vercel-enable-rewrite-caching", "value": "0" },
+        { "key": "Referrer-Policy", "value": "no-referrer" }
       ]
     },
     {
